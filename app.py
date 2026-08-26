@@ -136,6 +136,29 @@ def parse_sim_payload(response):
             expression = str(turn.get("expression", "")).strip().lower()
             if not text:
                 continue
+
+            # Normalize the model's natural full-name variants to the short
+            # display names used by the UI/expression map. Without this, names
+            # such as "Sophia Martinez" fail validation and fall back to
+            # Prof. Epps, making every portrait/label appear as Epps.
+            speaker_aliases = {
+                "Professor Epps": "Prof. Epps",
+                "Ric Epps": "Prof. Epps",
+                "Professor Ric Epps": "Prof. Epps",
+                "Sophia Martinez": "Sophia",
+                "Ethan Williams": "Ethan",
+                "Carlos Rodriguez": "Carlos",
+                "Aaliyah Brooks": "Aaliyah",
+                "Freja Lindström": "Freja",
+                "Freja Lindstrom": "Freja",
+                "Lyndon Johnson": "Lyndon B. Johnson",
+                "LBJ": "Lyndon B. Johnson",
+                "Madison": "James Madison",
+                "Clay": "Henry Clay",
+                "Chisholm": "Shirley Chisholm",
+                "McCain": "John McCain",
+            }
+            speaker = speaker_aliases.get(speaker, speaker)
             if speaker not in allowed:
                 speaker = "Prof. Epps"
             if expression not in {"neutral", "smile", "amused", "skeptical", "thinking", "surprised"}:
