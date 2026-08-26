@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ivc-chapter2-sim
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: SIM_PRODUCTION
+        value: "1"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SIM_SECRET_KEY
+        generateValue: true
+      - key: OPENAI_MODEL
+        value: gpt-5.5
+      - key: OPENAI_TTS_MODEL
+        value: gpt-4o-mini-tts
+      - key: OPENAI_TRANSCRIBE_MODEL
+        value: gpt-4o-mini-transcribe

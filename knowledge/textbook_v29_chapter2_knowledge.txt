@@ -1,0 +1,2 @@
+Chapter 2 knowledge is loaded from config/chapter2.py in this build.
+Authoritative source: American Government: Power, Rights, Institutions, and Democracy in Real Life, 8-week Student Edition v29, Chapter 2: Congress and Representation.

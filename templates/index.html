@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 2 Sim-Discussion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap');
+:root{
+  --gold:#d7b05f;
+  --cream:#f7f1e7;
+  --red:#a6192e;
+  --panel:#11100f;
+  --muted:#c8c0b2;
+  --field:#1b1815;
+  --room-width:58%;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#090807;
+  color:var(--cream);
+  font-family:'Inter',Arial,Helvetica,sans-serif
+}
+.app{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  overflow:hidden;
+  background:#090807
+}
+.room-wrap{
+  flex:0 0 var(--room-width);
+  min-width:42%;
+  max-width:80%;
+  height:100vh;
+  position:relative;
+  overflow:hidden;
+  background:#0b0a09
+}
+.room{
+  position:absolute;
+  left:0;
+  right:0;
+  top:126px;
+  bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#090807;
+}
+.room img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center center;
+  transform-origin:center center;
+  transition:transform .18s ease;
+  display:block;
+}
+.room-toolbar{
+  position:absolute;
+  left:auto;
+  right:14px;
+  bottom:14px;
+  display:flex;
+  gap:8px;
+  z-index:4;
+  background:rgba(10,9,8,.72);
+  border:1px solid rgba(215,176,95,.38);
+  border-radius:999px;
+  padding:6px
+}
+.room-toolbar button{
+  width:auto;
+  margin:0;
+  border:1px solid rgba(215,176,95,.45);
+  border-radius:999px;
+  background:#171411;
+  color:var(--cream);
+  padding:7px 10px;
+  font-size:.82rem;
+  font-weight:700;
+  cursor:pointer
+}
+.room-toolbar button:hover{background:#211c17}
+.resize-hint{
+  position:absolute;
+  top:90px;
+  right:14px;
+  background:rgba(10,9,8,.72);
+  color:var(--cream);
+  border:1px solid rgba(215,176,95,.38);
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:.76rem;
+  z-index:4
+}
+.divider{
+  flex:0 0 8px;
+  width:8px;
+  height:100vh;
+  cursor:col-resize;
+  background:linear-gradient(180deg,#b98e3e,#e0bf73,#b98e3e);
+  position:relative;
+  z-index:10
+}
+.divider::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:3px;
+  height:54px;
+  transform:translate(-50%,-50%);
+  border-radius:999px;
+  background:rgba(17,16,15,.68)
+}
+.panel{
+  flex:1 1 auto;
+  min-width:320px;
+  height:100vh;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden
+}
+.brand{
+  flex:0 0 auto;
+  text-align:center;
+  border-bottom:1px solid #6f5a31;
+  padding:22px 24px 18px;
+  background:#11100f
+}
+.brand h1{
+  margin:0;
+  color:#ffffff;
+  font-family:'Montserrat','Inter',Arial,sans-serif;
+  font-size:2.45rem;
+  line-height:1.05;
+  font-weight:800;
+  letter-spacing:.025em
+}
+.brand p{
+  font-family:'Inter',Arial,Helvetica,sans-serif;
+  margin:.55rem 0 0;
+  color:var(--gold);
+  font-size:1.2rem;
+  line-height:1.25;
+  font-weight:700
+}
+
+.brand p:last-child{
+  margin-top:.5rem !important;
+  font-size:.76rem !important;
+  line-height:1.3 !important;
+  font-weight:600 !important;
+}
+
+.transcript{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:18px 22px 28px;
+  scroll-behavior:smooth;
+  scrollbar-width:thin;
+  scrollbar-color:#6f5a31 #171411
+}
+.turn{margin:0 0 17px}
+.speaker{
+  color:var(--gold);
+  font-weight:800;
+  margin-bottom:5px
+}
+.text{
+  font:1.02rem/1.5 'Inter',Arial,Helvetica,sans-serif
+}
+.action{
+  font-size:.82rem;
+  color:var(--muted);
+  font-style:italic;
+  margin-top:4px
+}
+.student-turn{
+  background:rgba(166,25,46,.14);
+  border-left:4px solid var(--red);
+  padding:10px 12px;
+  border-radius:8px;
+  font-weight:700
+}
+.composer{
+  flex:0 0 auto;
+  border-top:1px solid #6f5a31;
+  background:#151311;
+  padding:14px 18px 22px;
+  box-shadow:0 -8px 18px rgba(0,0,0,.18)
+}
+.card{
+  border:1px solid #79663f;
+  border-radius:15px;
+  padding:14px;
+  background:#151311
+}
+label{
+  display:block;
+  color:var(--muted);
+  font-size:.88rem;
+  margin:10px 0 5px
+}
+input,textarea{
+  width:100%;
+  border:1px solid #796b55;
+  border-radius:9px;
+  background:var(--field);
+  color:white;
+  padding:11px;
+  font-size:.98rem
+}
+textarea{
+  min-height:86px;
+  max-height:180px;
+  resize:vertical
+}
+button.primary{
+  width:100%;
+  border:none;
+  border-radius:999px;
+  background:var(--gold);
+  color:#17110b;
+  font-weight:800;
+  font-size:1rem;
+  padding:12px;
+  margin-top:13px;
+  cursor:pointer
+}
+button.primary:disabled{opacity:.55;cursor:wait}
+.hidden{display:none!important}
+.status{
+  font-size:.8rem;
+  color:var(--muted);
+  margin-top:9px;
+  min-height:1.1em
+}
+@media(max-width:900px){
+  html,body{overflow:auto}
+  .app{
+    width:100%;
+    min-height:100vh;
+    height:auto;
+    flex-direction:column;
+    overflow:visible
+  }
+  .room-wrap{
+    flex:0 0 auto;
+    width:100%;
+    max-width:none;
+    min-width:0;
+    height:52vh
+  }
+  .divider{display:none}
+  .panel{
+    width:100%;
+    min-width:0;
+    height:70vh
+  }
+  .resize-hint{display:none}
+}
+
+.skip-link{
+  position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden
+}
+.skip-link:focus{
+  left:12px;top:12px;width:auto;height:auto;z-index:1000;
+  background:#fff;color:#111;padding:10px 14px;border-radius:8px;font-weight:700
+}
+.sr-only{
+  position:absolute!important;width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important
+}
+.access-toolbar{
+  display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;
+  border-bottom:1px solid #6f5a31;background:#151311
+}
+.access-toolbar button{
+  border:1px solid rgba(215,176,95,.45);
+  background:#171411;color:var(--cream);
+  border-radius:999px;padding:8px 11px;
+  font-size:.82rem;font-weight:700;cursor:pointer
+}
+.access-toolbar button[aria-pressed="true"]{
+  background:var(--gold);color:#17110b
+}
+.access-toolbar button:focus,
+.room-toolbar button:focus,
+button.primary:focus,
+input:focus, textarea:focus,
+.divider:focus{
+  outline:3px solid #ffffff;
+  outline-offset:3px
+}
+.divider:focus{
+  box-shadow:0 0 0 3px rgba(255,255,255,.85)
+}
+
+
+.voice-settings{
+  flex:0 0 auto;
+  margin:12px 16px 0;
+  border:1px solid #79663f;
+  border-radius:14px;
+  background:#171411;
+  padding:14px;
+  max-height:44vh;
+  overflow:auto
+}
+.voice-settings-head{
+  display:flex;justify-content:space-between;gap:14px;align-items:flex-start;
+  border-bottom:1px solid #5f4e30;padding-bottom:10px;margin-bottom:12px
+}
+.voice-settings-head h2{margin:0;color:var(--gold);font-size:1.05rem}
+.voice-settings-head p{margin:4px 0 0;color:var(--muted);font-size:.8rem}
+.voice-settings-head button{
+  border:1px solid #79663f;background:#11100f;color:var(--cream);
+  border-radius:999px;padding:5px 9px;cursor:pointer
+}
+.voice-grid{display:grid;grid-template-columns:1fr;gap:9px}
+.voice-row{
+  display:grid;grid-template-columns:100px 1fr auto;gap:8px;align-items:center
+}
+.voice-row label{margin:0;color:var(--cream);font-weight:700}
+.voice-row select{
+  width:100%;background:#1b1815;color:white;border:1px solid #796b55;
+  border-radius:8px;padding:8px
+}
+.voice-row button{
+  border:1px solid rgba(215,176,95,.5);background:#11100f;color:var(--cream);
+  border-radius:999px;padding:7px 10px;cursor:pointer;white-space:nowrap
+}
+.voice-note{font-size:.76rem;color:var(--muted);margin-top:10px}
+
+
+.mic-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.mic-button{background:#171512;color:#f6e8c1;border:1px solid #8f6c25;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+.mic-button[aria-pressed="true"]{outline:3px solid #d9b45d;outline-offset:2px}
+.mic-button:disabled{opacity:.55;cursor:not-allowed}
+.help-panel{border:1px solid #76591d;background:#151310;border-radius:14px;padding:16px;margin:0 18px 14px}
+.help-panel h2{margin:0 0 8px;color:#e1ba61;font-size:1.15rem}
+.help-panel p,.help-panel li{color:#eee4d0}
+.help-panel ul{margin:8px 0 0;padding-left:22px}
+
+.turn{
+  margin:0 0 15px;
+}
+.turn .speaker{
+  font-family:'Inter',Arial,Helvetica,sans-serif;
+  font-weight:800;
+  margin-bottom:6px
+}
+.turn .text{
+  background:#24211e;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:10px 12px;
+  font-family:'Inter',Arial,Helvetica,sans-serif;
+  line-height:1.45
+}
+.turn[data-speaker="Sophia"] .speaker{color:#38a9ff}
+.turn[data-speaker="Ethan"] .speaker{color:#ff6b57}
+.turn[data-speaker="Carlos"] .speaker{color:#7fd36f}
+.turn[data-speaker="Aaliyah"] .speaker{color:#d88cff}
+.turn[data-speaker="Freja"] .speaker{color:#f0b86e}
+.turn[data-speaker="Prof. Epps"] .speaker,
+.turn[data-speaker="Professor Epps"] .speaker{color:var(--gold)}
+.student-turn{
+  background:rgba(166,25,46,.14);
+  border-left:4px solid var(--red);
+  padding:10px 12px;
+  border-radius:8px;
+  font-weight:700
+}
+.room-side-toolbar{
+  position:absolute;
+  left:14px;
+  right:14px;
+  top:14px;
+  z-index:5;
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  background:rgba(10,9,8,.78);
+  border:1px solid rgba(215,176,95,.38);
+  border-radius:14px;
+  backdrop-filter:blur(4px)
+}
+.room-side-toolbar button{
+  width:auto;
+  text-align:center;
+  margin:0;
+  border:1px solid rgba(215,176,95,.45);
+  border-radius:999px;
+  background:#171411;
+  color:var(--cream);
+  padding:10px 15px;
+  font-size:.94rem;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap
+}
+.room-side-toolbar button[aria-pressed="true"]{
+  background:var(--gold);
+  color:#17110b
+}
+.utility-panel{
+  position:absolute;
+  right:14px;
+  left:auto;
+  top:90px;
+  z-index:6;
+  width:min(360px,42%);
+  max-height:70vh;
+  overflow:auto;
+  border:1px solid #76591d;
+  background:#151310;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35)
+}
+.final-transcript-card{
+  margin-top:14px;
+  border:1px solid #76591d;
+  background:#151310;
+  border-radius:14px;
+  padding:14px 16px
+}
+.final-transcript-card h2{
+  margin:0 0 7px;
+  color:#e1ba61;
+  font-family:'Montserrat','Inter',Arial,sans-serif;
+  font-size:1.05rem
+}
+
+
+@media(max-width:900px){
+  .room{
+    top:112px;
+  }
+  .room-side-toolbar{
+    left:10px;
+    right:10px;
+    top:10px;
+    justify-content:center;
+  }
+  .room-side-toolbar button{
+    font-size:.82rem;
+    padding:8px 11px;
+  }
+  .brand h1{font-size:2rem}
+  .brand p{font-size:1.05rem}
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#reply">Skip to response box</a>
+<a class="skip-link" href="#transcript">Skip to conversation</a>
+<main class="app">
+  <section class="room-wrap" id="roomWrap" aria-label="Chapter 2 discussion room visualization">
+    <div class="room" id="room"><img id="roomImage"
+ src="/static/chapter2_room.png" alt="Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room, welcoming the arriving student."></div>
+
+    <div class="access-toolbar room-side-toolbar" aria-label="Accessibility and audio controls">
+      <button type="button" id="audioToggle" aria-pressed="false" aria-label="Turn character audio on">🔊 Audio: Off</button>
+      <button type="button" id="replayLast" aria-label="Replay the last spoken dialogue">↻ Replay last</button>
+      <button type="button" id="pauseAudio" aria-label="Pause or stop spoken dialogue">Ⅱ Pause audio</button>
+      <button type="button" id="focusConversation" aria-pressed="false" aria-label="Enlarge the conversation panel">Focus dialogue</button>
+      <button type="button" id="transcriptBtn" aria-expanded="false" aria-controls="transcriptPanel">📋 Transcript</button>
+      <button type="button" id="helpBtn" aria-expanded="false" aria-controls="helpPanel">❓ Help</button>
+    </div>
+
+    <section id="transcriptPanel" class="utility-panel hidden" aria-labelledby="transcriptPanelTitle">
+      <h2 id="transcriptPanelTitle" style="margin:0 0 7px;color:#e1ba61;font-size:1.05rem">Your Sim Transcript</h2>
+      <p style="margin:0 0 10px;color:#eee4d0;font-size:.82rem">Your conversation is saved as you go. You can copy it here any time, and the final copy prompt will appear again when the Sim ends.</p>
+      <button type="button" id="copyTranscript" class="primary" style="width:auto;padding:10px 16px">📋 Copy Full Transcript</button>
+      <div id="copyTranscriptStatus" class="status" aria-live="polite" style="margin-top:7px"></div>
+    </section>
+
+    <section id="helpPanel" class="utility-panel hidden" aria-labelledby="helpTitle">
+      <h2 id="helpTitle">Sim Help</h2>
+      <p>This help is for operating the Sim. It does not provide answers to graded discussion questions.</p>
+      <ul>
+        <li><strong>Microphone:</strong> choose Speak my response, allow microphone access, talk, then choose Stop &amp; transcribe.</li>
+        <li><strong>Review first:</strong> your spoken words appear in the response box. Edit anything the transcription got wrong before sending.</li>
+        <li><strong>Audio:</strong> character audio can be turned off at any time. Written dialogue always remains available.</li>
+        <li><strong>Connection:</strong> if a request fails, your typed response remains in the box so you can try again.</li>
+        <li><strong>Refresh:</strong> the visible transcript is restored after an accidental refresh when the browser session is still available.</li>
+      </ul>
+    </section>
+
+     
+    
+<div class="resize-hint">Drag divider to resize</div>
+    <div class="room-toolbar" aria-label="Room view controls">
+      <button type="button" id="zoomOut" aria-label="Zoom room out">−</button>
+      <button type="button" id="fitRoom">Fit full room</button>
+      <button type="button" id="resetView">Reset view</button>
+      <button type="button" id="zoomIn" aria-label="Zoom room in">+</button>
+    </div>
+  </section>
+
+  <div class="divider" id="divider" tabindex="0" role="separator" aria-orientation="vertical" aria-label="Resize room and conversation" aria-valuemin="42" aria-valuemax="80" aria-valuenow="58" aria-valuetext="Room uses 58 percent of the window"></div>
+
+  <aside class="panel">
+    <div class="brand">
+  <h1>SIM-DISCUSSION</h1>
+  <p>American Government · Chapter 2</p>
+  <p style="margin:8px 0 0; color:#d7b05f; font-family:'Inter',Arial,Helvetica,sans-serif; font-size:.68rem; line-height:1.35;">
+    &copy; 2026 Ric Epps. All Rights Reserved.
+  </p>
+</div>
+
+
+    <div id="transcript" class="transcript" role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false" tabindex="0">
+      <h2 class="sr-only">Sim conversation</h2>
+      <div class="turn">
+        <div class="speaker">Prof. Epps</div>
+        <div class="text">Hey everyone, welcome! Come on in and grab a seat. Before we get started, tell me a little about you! Please tell me your name, where you're from, and one fun fact about yourself. And...be sure to give me something better than ‘I like pizza.’ 😏</div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <div id="setupCard" class="intro-card">
+        <h2 style="margin-top:0;color:#e1ba61">Quick Setup Check 🎙️</h2>
+        <p>Before you grab a seat, type or say <strong>Howdy</strong> or <strong>Hola</strong>. That confirms your response controls are working.</p>
+        <textarea id="setupReply" placeholder='Type “Howdy” or “Hola”' aria-label="Quick setup response"></textarea>
+        <div class="mic-row">
+          <button type="button" class="mic-button" id="setupMicBtn" aria-pressed="false">🎤 Say Howdy or Hola</button>
+          <span id="setupStatus" class="status" aria-live="polite">Typing works too.</span>
+        </div>
+        <button class="primary" id="setupContinue">Continue</button>
+      </div>
+      <div id="introCard" class="card">
+        <label for="name">Your name</label>
+        <input id="name" placeholder="Type your name" aria-describedby="nameHelp">
+        <div id="nameHelp" class="sr-only">Enter the name you want everyone in the Sim to call you.</div>
+        <label for="origin">Where are you from?</label>
+        <input id="origin" placeholder="City, town, state, or country" aria-describedby="originHelp">
+        <div id="originHelp" class="sr-only">Enter where you are from. You may give a city, town, state, or country.</div>
+        <label for="fact">One crazy fun fact about yourself</label>
+        <textarea id="fact" placeholder="Give us something good" aria-describedby="factHelp"></textarea>
+        <div id="factHelp" class="sr-only">Enter one unusual, funny, or interesting fact about yourself.</div>
+        <button class="primary" id="join">LET’S PLAY!</button>
+        <div id="introStatus" class="status"></div>
+      </div>
+
+      <div id="replyCard" class="hidden">
+        <textarea id="reply" placeholder="Type your response, or use the microphone..." aria-label="Your response to the Sim discussion"></textarea>
+        <div class="mic-row">
+          <button type="button" class="mic-button" id="micBtn" aria-pressed="false">🎤 Speak my response</button>
+          <span id="micStatus" class="status" aria-live="polite">Your speech will be transcribed here for review before sending.</span>
+        </div>
+        <div class="status" style="margin-top:6px">Enter = Continue · Shift+Enter = New line · Spoken responses are never sent automatically.</div>
+        <div id="replyStatus" class="status" style="margin:8px 0 4px; min-height:1.25em;"></div>
+        <button class="primary" id="send">Continue</button>
+      </div>
+
+      <section id="finalTranscriptCard" class="final-transcript-card hidden" aria-labelledby="finalTranscriptTitle">
+        <h2 id="finalTranscriptTitle">Ready to upload your Sim transcript to Canvas?</h2>
+        <p style="margin:0 0 10px;color:#eee4d0;font-size:.86rem">Copy the full transcript, return to the Canvas assignment, paste it into Text Entry, review it, and submit.</p>
+        <button type="button" id="finalCopyTranscript" class="primary">📋 Copy Full Transcript</button>
+        <div id="finalCopyTranscriptStatus" class="status" aria-live="polite"></div>
+      </section>
+          <div id="audioStatus" class="sr-only" aria-live="polite"></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+const transcript = document.getElementById('transcript');
+const introCard = document.getElementById('introCard');
+const replyCard = document.getElementById('replyCard');
+const divider = document.getElementById('divider');
+const room = document.getElementById('room');
+const roomImage = document.getElementById('roomImage');
+const setupCard=document.getElementById('setupCard');
+const setupReply=document.getElementById('setupReply');
+const setupMicBtn=document.getElementById('setupMicBtn');
+const setupStatus=document.getElementById('setupStatus');
+const setupContinue=document.getElementById('setupContinue');
+const copyTranscript=document.getElementById('copyTranscript');
+const copyTranscriptStatus=document.getElementById('copyTranscriptStatus');
+const transcriptBtn=document.getElementById('transcriptBtn');
+const transcriptPanel=document.getElementById('transcriptPanel');
+const finalCopyTranscript=document.getElementById('finalCopyTranscript');
+const finalCopyTranscriptStatus=document.getElementById('finalCopyTranscriptStatus');
+introCard.classList.add('hidden');
+
+const helpBtn = document.getElementById('helpBtn');
+const helpPanel = document.getElementById('helpPanel');
+const micBtn = document.getElementById('micBtn');
+const micStatus = document.getElementById('micStatus');
+
+let roomPct = 58;
+let zoom = 1;
+let dragging = false;
+
+const transcriptStorageKey = 'ivc_ch2_sim_transcript_v1';
+const simStateStorageKey = 'ivc_ch2_sim_started_v1';
+const simMetaStorageKey = 'ivc_ch2_sim_meta_v1';
+
+const characterExpressions = {
+  'Prof. Epps': {
+    neutral:'/static/expressions/prof_epps/neutral.png',
+    amused:'/static/expressions/prof_epps/amused.png',
+    skeptical:'/static/expressions/prof_epps/skeptical.png',
+    thinking:'/static/expressions/prof_epps/thinking.png',
+    surprised:'/static/expressions/prof_epps/surprised.png'
+  },
+  'Professor Epps': {
+    neutral:'/static/expressions/prof_epps/neutral.png',
+    amused:'/static/expressions/prof_epps/amused.png',
+    skeptical:'/static/expressions/prof_epps/skeptical.png',
+    thinking:'/static/expressions/prof_epps/thinking.png',
+    surprised:'/static/expressions/prof_epps/surprised.png'
+  },
+  'Sophia': {
+    neutral:'/static/expressions/sophia/neutral.png',
+    amused:'/static/expressions/sophia/amused.png',
+    skeptical:'/static/expressions/sophia/skeptical.png',
+    thinking:'/static/expressions/sophia/thinking.png',
+    surprised:'/static/expressions/sophia/surprised.png'
+  },
+  'Ethan': {
+    neutral:'/static/expressions/ethan/neutral.png',
+    amused:'/static/expressions/ethan/amused.png',
+    skeptical:'/static/expressions/ethan/skeptical.png',
+    thinking:'/static/expressions/ethan/thinking.png',
+    surprised:'/static/expressions/ethan/surprised.png'
+  },
+  'Carlos': {
+    neutral:'/static/expressions/carlos/neutral.png',
+    amused:'/static/expressions/carlos/amused.png',
+    skeptical:'/static/expressions/carlos/skeptical.png',
+    thinking:'/static/expressions/carlos/thinking.png',
+    surprised:'/static/expressions/carlos/surprised.png'
+  },
+  'Aaliyah': {
+    neutral:'/static/expressions/aaliyah/neutral.png',
+    amused:'/static/expressions/aaliyah/amused.png',
+    skeptical:'/static/expressions/aaliyah/skeptical.png',
+    thinking:'/static/expressions/aaliyah/thinking.png',
+    surprised:'/static/expressions/aaliyah/surprised.png'
+  },
+  'Freja': {
+    neutral:'/static/expressions/freja/neutral.png',
+    amused:'/static/expressions/freja/amused.png',
+    skeptical:'/static/expressions/freja/skeptical.png',
+    thinking:'/static/expressions/freja/thinking.png',
+    surprised:'/static/expressions/freja/surprised.png'
+  },
+  'James Madison': {neutral:'/static/expressions/guests/james_madison/neutral.png', smile:'/static/expressions/guests/james_madison/smile.png', amused:'/static/expressions/guests/james_madison/amused.png', skeptical:'/static/expressions/guests/james_madison/skeptical.png', thinking:'/static/expressions/guests/james_madison/thinking.png', surprised:'/static/expressions/guests/james_madison/surprised.png'},
+  'Henry Clay': {neutral:'/static/expressions/guests/henry_clay/neutral.png', smile:'/static/expressions/guests/henry_clay/smile.png', amused:'/static/expressions/guests/henry_clay/amused.png', skeptical:'/static/expressions/guests/henry_clay/skeptical.png', thinking:'/static/expressions/guests/henry_clay/thinking.png', surprised:'/static/expressions/guests/henry_clay/surprised.png'},
+  'Lyndon B. Johnson': {neutral:'/static/expressions/guests/lyndon_johnson/neutral.png', smile:'/static/expressions/guests/lyndon_johnson/smile.png', amused:'/static/expressions/guests/lyndon_johnson/amused.png', skeptical:'/static/expressions/guests/lyndon_johnson/skeptical.png', thinking:'/static/expressions/guests/lyndon_johnson/thinking.png', surprised:'/static/expressions/guests/lyndon_johnson/surprised.png'},
+  'Shirley Chisholm': {neutral:'/static/expressions/guests/shirley_chisholm/neutral.png', smile:'/static/expressions/guests/shirley_chisholm/smile.png', amused:'/static/expressions/guests/shirley_chisholm/amused.png', skeptical:'/static/expressions/guests/shirley_chisholm/skeptical.png', thinking:'/static/expressions/guests/shirley_chisholm/thinking.png', surprised:'/static/expressions/guests/shirley_chisholm/surprised.png'},
+  'John McCain': {neutral:'/static/expressions/guests/john_mccain/neutral.png', smile:'/static/expressions/guests/john_mccain/smile.png', amused:'/static/expressions/guests/john_mccain/amused.png', skeptical:'/static/expressions/guests/john_mccain/skeptical.png', thinking:'/static/expressions/guests/john_mccain/thinking.png', surprised:'/static/expressions/guests/john_mccain/surprised.png'}
+};
+
+const allowedExpressions = new Set(['neutral','smile','amused','skeptical','thinking','surprised']);
+
+function normalizeExpression(value){
+  const key = String(value || '').trim().toLowerCase();
+  return allowedExpressions.has(key) ? key : '';
+}
+
+function inferExpression(text){
+  const t = String(text || '').toLowerCase();
+
+  if(/[!?]{2,}/.test(t) ||
+     /\b(wow|whoa|seriously|really\?|no way|impressive|didn't expect|did not expect)\b/.test(t)){
+    return 'surprised';
+  }
+
+  if(/\b(lol|haha|funny|good one|fair enough|nice|love that|that's great|that is great)\b/.test(t) ||
+     /[😂🤣😄😁😉😏]/u.test(t)){
+    return 'amused';
+  }
+
+  if(/\b(but|however|wait|why|how come|are you sure|i'm not convinced|i am not convinced|does that mean)\b/.test(t) ||
+     /\?$/.test(t.trim())){
+    return 'skeptical';
+  }
+
+  if(/\b(think|consider|reflect|maybe|perhaps|it depends|on the other hand|let me think|interesting point)\b/.test(t)){
+    return 'thinking';
+  }
+
+  return 'neutral';
+}
+
+function expressionForTurn(turn){
+  const explicit = normalizeExpression(turn && turn.expression);
+  if(explicit) return explicit;
+  return inferExpression(turn && turn.text);
+}
+
+function loadSavedTranscript(){
+  try{
+    const items = JSON.parse(localStorage.getItem(transcriptStorageKey) || '[]');
+    if(!Array.isArray(items) || !items.length) return false;
+    transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+    items.forEach(item=>{
+      if(item.type === 'student'){
+        addStudent(item.text, false, false);
+      }else if(item.type === 'sim'){
+        addTurn(item.speaker, item.text, '', false, item.expression || '', false);
+      }
+    });
+    return true;
+  }catch(_){
+    return false;
+  }
+}
+
+function saveTranscriptItem(item){
+  try{
+    const items = JSON.parse(localStorage.getItem(transcriptStorageKey) || '[]');
+    items.push(item);
+    localStorage.setItem(transcriptStorageKey, JSON.stringify(items));
+  }catch(_){}
+}
+
+function clearSavedTranscript(){
+  try{
+    localStorage.removeItem(transcriptStorageKey);
+    localStorage.removeItem(simStateStorageKey);
+    localStorage.removeItem(simMetaStorageKey);
+  }catch(_){}
+}
+
+function applyRoomWidth(){
+  document.documentElement.style.setProperty('--room-width', roomPct + '%');
+}
+applyRoomWidth();
+
+divider.addEventListener('mousedown', ()=>{
+  dragging = true;
+  document.body.style.userSelect='none';
+  document.body.style.cursor='col-resize';
+});
+
+window.addEventListener('mousemove', (e)=>{
+  if(!dragging || window.innerWidth <= 900) return;
+  const pct = (e.clientX / window.innerWidth) * 100;
+  roomPct = Math.max(42, Math.min(80, pct));
+  applyRoomWidth();
+  updateDividerAria();
+});
+
+window.addEventListener('mouseup', ()=>{
+  dragging = false;
+  document.body.style.userSelect='';
+  document.body.style.cursor='';
+});
+
+function setZoom(next){
+  zoom = Math.max(.90, Math.min(1.25, next));
+  roomImage.style.transform = `scale(${zoom})`;
+}
+
+document.getElementById('zoomIn').addEventListener('click', ()=>setZoom(zoom + .05));
+
+document.getElementById('fitRoom').addEventListener('click', ()=>{
+  zoom = 1;
+  setZoom(1);
+});
+
+document.getElementById('zoomOut').addEventListener('click', ()=>setZoom(zoom - .05));
+document.getElementById('resetView').addEventListener('click', ()=>{
+  roomPct = 58;
+  zoom = 1;
+  applyRoomWidth();
+  setZoom(1);
+});
+
+function addTurn(speaker, text, action='', persist=true, expression='', shouldScroll=true){
+  const wrap=document.createElement('div');
+  wrap.className='turn';
+  wrap.dataset.speaker=speaker;
+
+  const row=document.createElement('div');
+  row.style.display='flex';
+  row.style.alignItems='flex-start';
+  row.style.gap='12px';
+
+  const resolvedExpression = normalizeExpression(expression) || inferExpression(text);
+  const imagePath = characterExpressions[speaker]?.[resolvedExpression] ||
+                    characterExpressions[speaker]?.neutral;
+
+  if(imagePath){
+    const portrait=document.createElement('img');
+    portrait.src=imagePath;
+    portrait.alt=speaker + ' — ' + resolvedExpression + ' expression';
+    portrait.dataset.expression=resolvedExpression;
+    portrait.style.width='72px';
+    portrait.style.height='72px';
+    portrait.style.objectFit='cover';
+    portrait.style.borderRadius='12px';
+    portrait.style.flex='0 0 72px';
+    portrait.style.boxShadow='0 3px 10px rgba(0,0,0,.35)';
+    row.appendChild(portrait);
+  }
+
+  const content=document.createElement('div');
+  content.style.flex='1';
+  content.style.minWidth='0';
+
+  const sp=document.createElement('div');
+  sp.className='speaker';
+  sp.textContent=speaker;
+
+  const tx=document.createElement('div');
+  tx.className='text';
+  tx.textContent=text;
+
+  content.appendChild(sp);
+  content.appendChild(tx);
+
+  if(action){
+    const ac=document.createElement('div');
+    ac.className='action';
+    ac.textContent=action;
+    content.appendChild(ac);
+  }
+
+  row.appendChild(content);
+  wrap.appendChild(row);
+  transcript.appendChild(wrap);
+
+  if(shouldScroll){
+    requestAnimationFrame(()=>{
+      const targetTop = Math.max(0, wrap.offsetTop - transcript.offsetTop - 8);
+      transcript.scrollTo({top:targetTop, behavior:'smooth'});
+    });
+  }
+
+  if(persist){
+    saveTranscriptItem({
+      type:'sim',
+      speaker,
+      text,
+      expression:resolvedExpression
+    });
+  }
+
+  if(autoRead){ queueTurnAudio(speaker, text); }
+}
+
+function addStudent(text, persist=true, shouldScroll=true){
+  const wrap=document.createElement('div');
+  wrap.className='turn student-turn';
+  wrap.textContent=text;
+  transcript.appendChild(wrap);
+
+  if(shouldScroll){
+    requestAnimationFrame(()=>{
+      const targetTop = Math.max(0, wrap.offsetTop - transcript.offsetTop - 8);
+      transcript.scrollTo({top:targetTop, behavior:'smooth'});
+    });
+  }
+
+  if(persist){ saveTranscriptItem({type:'student', text}); }
+}
+
+
+function maybeShowFinalTranscript(turns){
+  if(!Array.isArray(turns)) return;
+  const last=turns[turns.length-1];
+  if(!last || !last.text) return;
+  const t=last.text.toLowerCase();
+  if(t.includes('ready to upload your sim transcript') || t.includes('wraps up this sim-discussion') || t.includes('wraps up this sim discussion')){
+    document.getElementById('finalTranscriptCard').classList.remove('hidden');
+  }
+}
+
+async function postJSON(url, body){
+  const r=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  const data=await r.json();
+  if(!r.ok) throw new Error(data.error || 'Something went wrong');
+  return data;
+}
+
+document.getElementById('name').addEventListener('keydown',(e)=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    document.getElementById('origin').focus();
+  }
+});
+document.getElementById('origin').addEventListener('keydown',(e)=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    document.getElementById('fact').focus();
+  }
+});
+document.getElementById('fact').addEventListener('keydown',(e)=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    document.getElementById('join').click();
+  }
+});
+
+let introSubmitted = false;
+
+document.getElementById('join').addEventListener('click', async ()=>{
+  if(introSubmitted) return;
+
+  const btn=document.getElementById('join');
+  const name=document.getElementById('name').value.trim();
+  const origin=document.getElementById('origin').value.trim();
+  const fact=document.getElementById('fact').value.trim();
+
+  if(!name){
+    document.getElementById('name').focus();
+    return;
+  }
+
+  introSubmitted = true;
+  btn.disabled = true;
+
+  // Immediately move the student's typed introduction into the live dialogue.
+  clearSavedTranscript();
+  transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+
+  addStudent(`${name}: ${origin?`I'm from ${origin}. `:''}${fact?`Fun fact: ${fact}`:''}`);
+
+  localStorage.setItem(simMetaStorageKey, JSON.stringify({
+    name,
+    origin,
+    fact,
+    session_id:'',
+    started_at:new Date().toISOString()
+  }));
+
+  // Clear and hide the introduction form immediately.
+  document.getElementById('name').value='';
+  document.getElementById('origin').value='';
+  document.getElementById('fact').value='';
+  introCard.classList.add('hidden');
+  replyCard.classList.remove('hidden');
+  document.getElementById('reply').focus({preventScroll:true});
+  document.getElementById('replyStatus').textContent='The room is responding...';
+
+  try{
+    const data=await postJSON('/api/start',{name,origin,fact});
+
+    localStorage.setItem(simMetaStorageKey, JSON.stringify({
+      name,
+      origin,
+      fact,
+      session_id:data.session_id||'',
+      started_at:new Date().toISOString()
+    }));
+
+    prefetchTurnAudio(data.turns||[]);
+
+    // Opening/introduction sequence is intentionally warm and welcoming.
+    // Every core character uses the Amused/Friendly portrait here.
+    (data.turns||[]).forEach((t,index)=>
+      addTurn(
+        t.speaker,
+        t.text,
+        t.action||'',
+        true,
+        normalizeExpression(t.expression) || 'amused',
+        index === 0
+      )
+    );
+
+    maybeShowFinalTranscript(data.turns||[]);
+
+    localStorage.setItem(simStateStorageKey, '1');
+    document.getElementById('replyStatus').textContent='';
+
+    if(autoRead){
+      queueTurnAudio('Prof. Epps', FIRST_AUDIO_BRIDGE);
+    }
+  }catch(e){
+    // Keep the student's introduction visible and keep the response box open.
+    // Do not add another copy of the intro.
+    document.getElementById('replyStatus').textContent =
+      e.message || 'Your introduction was added, but the Sim server is not connected to OpenAI yet. Reconnect the server, then continue.';
+  }finally{
+    btn.disabled=false;
+  }
+});
+
+document.getElementById('send').addEventListener('click', async ()=>{
+  const btn=document.getElementById('send');
+  const box=document.getElementById('reply');
+  const text=box.value.trim();
+  if(!text) return;
+
+  btn.disabled=true;
+  document.getElementById('replyStatus').textContent='Thinking...';
+
+  try{
+    addStudent(text);
+    box.value='';
+
+
+    const data=await postJSON('/api/reply',{text});
+    prefetchTurnAudio(data.turns||[]);
+
+    (data.turns||[]).forEach((t,index)=>
+      addTurn(
+        t.speaker,
+        t.text,
+        t.action||'',
+        true,
+        expressionForTurn(t),
+        index === 0
+      )
+    );
+
+    maybeShowFinalTranscript(data.turns||[]);
+    document.getElementById('replyStatus').textContent='';
+  }catch(e){
+    document.getElementById('replyStatus').textContent=e.message;
+  }finally{
+    btn.disabled=false;
+  }
+});
+
+const replyBox = document.getElementById('reply');
+
+
+// ---------- Howdy / Hola quick setup ----------
+let setupRecorder=null, setupStream=null, setupChunks=[];
+async function startSetupRecording(){
+  try{
+    setupStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    setupChunks=[];
+    const mimeType=supportedRecordingMime();
+    setupRecorder=mimeType?new MediaRecorder(setupStream,{mimeType}):new MediaRecorder(setupStream);
+    setupRecorder.addEventListener('dataavailable',e=>{if(e.data&&e.data.size)setupChunks.push(e.data);});
+    setupRecorder.addEventListener('stop',async()=>{
+      const actualType=setupRecorder.mimeType||mimeType||'audio/webm';
+      const blob=new Blob(setupChunks,{type:actualType});
+      setupStream.getTracks().forEach(t=>t.stop());
+      setupStatus.textContent='Transcribing…';
+      try{
+        const form=new FormData();
+        const ext=actualType.includes('mp4')?'mp4':actualType.includes('ogg')?'ogg':'webm';
+        form.append('audio',blob,`setup.${ext}`);
+        const r=await fetch('/api/transcribe',{method:'POST',body:form});
+        const data=await r.json();
+        if(!r.ok)throw new Error(data.error||'Transcription failed.');
+        setupReply.value=data.text;
+        refreshSetupContinue();
+        setupStatus.textContent='Got it. Continue when ready.';
+      }catch(e){setupStatus.textContent='Could not transcribe that. Type Howdy or Hola instead.';}
+      setupMicBtn.textContent='🎤 Say Howdy or Hola';
+      setupMicBtn.setAttribute('aria-pressed','false');
+      setupRecorder=null;
+    });
+    setupRecorder.start();
+    setupMicBtn.textContent='⏹ Stop & transcribe';
+    setupMicBtn.setAttribute('aria-pressed','true');
+    setupStatus.textContent='Listening…';
+  }catch(e){setupStatus.textContent='Microphone unavailable. Type Howdy or Hola instead.';}
+}
+setupMicBtn.addEventListener('click',async()=>{
+  if(setupRecorder&&setupRecorder.state==='recording')setupRecorder.stop();
+  else await startSetupRecording();
+});
+function refreshSetupContinue(){
+  setupContinue.disabled = !setupReply.value.trim();
+}
+setupContinue.disabled = true;
+setupReply.addEventListener('input', refreshSetupContinue);
+
+setupContinue.addEventListener('click',()=>{
+  if(!setupReply.value.trim()){
+    setupStatus.textContent='Give me a quick Howdy or Hola first. 🙂';
+    return;
+  }
+  setupCard.classList.add('hidden');
+  introCard.classList.remove('hidden');
+  document.getElementById('name').focus();
+});
+setupReply.addEventListener('keydown',(e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+
+    if(!setupReply.value.trim()){
+      setupStatus.textContent='Give me a quick Howdy or Hola first. 🙂';
+      return;
+    }
+
+    setupContinue.click();
+  }
+});
+
+// ---------- Student microphone -> editable transcription ----------
+let mediaRecorder = null;
+let micStream = null;
+let micChunks = [];
+
+function supportedRecordingMime(){
+  const candidates = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'];
+  if(!window.MediaRecorder) return '';
+  return candidates.find(t=>MediaRecorder.isTypeSupported(t)) || '';
+}
+
+async function startRecording(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){
+    micStatus.textContent = 'This browser does not support microphone recording here. You can still type your response.';
+    return;
+  }
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    micChunks = [];
+    const mimeType = supportedRecordingMime();
+    mediaRecorder = mimeType ? new MediaRecorder(micStream, {mimeType}) : new MediaRecorder(micStream);
+
+    mediaRecorder.addEventListener('dataavailable', e=>{
+      if(e.data && e.data.size) micChunks.push(e.data);
+    });
+
+    mediaRecorder.addEventListener('stop', async ()=>{
+      const actualType = mediaRecorder.mimeType || mimeType || 'audio/webm';
+      const blob = new Blob(micChunks, {type:actualType});
+      if(micStream) micStream.getTracks().forEach(t=>t.stop());
+      micStream = null;
+
+      micBtn.disabled = true;
+      micBtn.setAttribute('aria-pressed','false');
+      micBtn.textContent = '🎤 Speak my response';
+      micStatus.textContent = 'Transcribing your response…';
+
+      try{
+        const form = new FormData();
+        const extension = actualType.includes('mp4') ? 'mp4' : actualType.includes('ogg') ? 'ogg' : 'webm';
+        form.append('audio', blob, `student-response.${extension}`);
+
+        const r = await fetch('/api/transcribe', {method:'POST', body:form});
+        const data = await r.json().catch(()=>({}));
+        if(!r.ok) throw new Error(data.error || 'Transcription failed.');
+
+        const existing = replyBox.value.trim();
+        replyBox.value = existing ? `${existing}\n${data.text}` : data.text;
+        replyBox.focus();
+        replyBox.setSelectionRange(replyBox.value.length, replyBox.value.length);
+        micStatus.textContent = 'Transcription ready. Review or edit it, then press Send.';
+      }catch(e){
+        micStatus.textContent = e.message || 'Transcription failed. You can still type your response.';
+      }finally{
+        micBtn.disabled = false;
+        mediaRecorder = null;
+        micChunks = [];
+      }
+    });
+
+    mediaRecorder.start();
+    micBtn.setAttribute('aria-pressed','true');
+    micBtn.textContent = '⏹ Stop & transcribe';
+    micStatus.textContent = 'Listening… Speak naturally, then choose Stop & transcribe.';
+  }catch(e){
+    micStatus.textContent = 'Microphone access was not available. Check browser permission, or type your response.';
+    if(micStream){
+      micStream.getTracks().forEach(t=>t.stop());
+      micStream = null;
+    }
+  }
+}
+
+micBtn.addEventListener('click', async ()=>{
+  if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+  else await startRecording();
+});
+
+
+replyBox.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    document.getElementById('send').click();
+  }
+});
+
+
+// Restore the visible transcript after an accidental refresh.
+// The server keeps the OpenAI conversation pointer in the signed session cookie.
+if(localStorage.getItem(simStateStorageKey) === '1'){
+  const restored = loadSavedTranscript();
+  if(restored){
+    introCard.classList.add('hidden');
+    replyCard.classList.remove('hidden');
+    document.getElementById('replyStatus').textContent =
+      'Conversation restored after refresh.';
+  }
+}
+
+// ---------- Per-student transcript export ----------
+function transcriptMeta(){
+  try{return JSON.parse(localStorage.getItem(simMetaStorageKey) || '{}');}catch(_){return {};}
+}
+
+function buildTranscriptText(){
+  const meta=transcriptMeta();
+  const lines=[];
+  lines.push('POLS C1000');
+  lines.push('CHAPTER 1 SIM-DISCUSSION');
+  lines.push('Constitutional Foundations, Democracy, and Federalism');
+  lines.push('');
+  lines.push(`Student: ${meta.name || 'Student'}`);
+  if(meta.session_id) lines.push(`Session ID: ${meta.session_id}`);
+  const when=meta.started_at ? new Date(meta.started_at) : new Date();
+  lines.push(`Session started: ${when.toLocaleString()}`);
+  lines.push('');
+  lines.push('--------------------------------------------------');
+  lines.push('');
+
+  transcript.querySelectorAll('.turn').forEach(turn=>{
+    if(turn.classList.contains('student-turn')){
+      lines.push(`${(meta.name || 'STUDENT').toUpperCase()} — STUDENT RESPONSE:`);
+      lines.push((turn.textContent || '').trim());
+    }else{
+      const speaker=(turn.querySelector('.speaker')?.textContent || 'SIM').trim();
+      const text=(turn.querySelector('.text')?.textContent || '').trim();
+      lines.push(`${speaker.toUpperCase()}:`);
+      lines.push(text);
+    }
+    lines.push('');
+  });
+  lines.push('--------------------------------------------------');
+  lines.push('End of copied Sim transcript');
+  return lines.join('\n');
+}
+
+copyTranscript.addEventListener('click', async ()=>{
+  const text=buildTranscriptText();
+  try{
+    await navigator.clipboard.writeText(text);
+    copyTranscriptStatus.textContent='Full transcript copied. Return to Canvas, paste it into Text Entry, review it, and submit.';
+    finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
+  }catch(_){
+    const temp=document.createElement('textarea');
+    temp.value=text;
+    temp.setAttribute('readonly','');
+    temp.style.position='fixed';
+    temp.style.opacity='0';
+    document.body.appendChild(temp);
+    temp.select();
+    const ok=document.execCommand('copy');
+    temp.remove();
+    copyTranscriptStatus.textContent=ok ? 'Full transcript copied. Return to Canvas and paste it into Text Entry.' : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
+    finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
+  }
+});
+
+transcriptBtn.addEventListener('click', ()=>{
+  const opening = transcriptPanel.classList.contains('hidden');
+  transcriptPanel.classList.toggle('hidden');
+  transcriptBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  if(opening) helpPanel.classList.add('hidden');
+});
+
+finalCopyTranscript.addEventListener('click', ()=>copyTranscript.click());
+
+// ---------- Neutral operating help ----------
+helpBtn.addEventListener('click', ()=>{
+  const opening = helpPanel.classList.contains('hidden');
+  helpPanel.classList.toggle('hidden');
+  helpBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  if(opening){ transcriptPanel.classList.add('hidden'); helpPanel.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+});
+
+// ---------- Accessibility and audio ----------
+const audioToggle = document.getElementById('audioToggle');
+const replayLast = document.getElementById('replayLast');
+const pauseAudio = document.getElementById('pauseAudio');
+const focusConversation = document.getElementById('focusConversation');
+const audioStatus = document.getElementById('audioStatus');
+
+const characterVoices = {
+  'Prof. Epps':'onyx',
+  'Sophia':'marin',
+  'Ethan':'ash',
+  'Carlos':'cedar',
+  'Aaliyah':'coral',
+  'Freja':'marin'
+};
+
+
+let autoRead = false;
+let lastAudioTurn = null;
+let currentAudio = null;
+let focusMode = false;
+let audioQueue = [];
+let audioPlaying = false;
+const speechCache = new Map();
+const FIRST_AUDIO_BRIDGE = "All right, let's get everybody settled in.";
+console.info('Chapter 2 Sim expression system loaded: neutral, smile, amused, skeptical, thinking, surprised; historical guest assets integrated.');
+
+function textForSpeech(text){
+  return (text || '')
+    .replace(/[\p{Extended_Pictographic}\uFE0F]/gu, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function speechCacheKey(speaker, text, preview=false, voiceOverride=''){
+  const voice = characterVoices[speaker] || '';
+  return `${speaker}|${voice}|${preview ? 'preview' : 'turn'}|${textForSpeech(text)}`;
+}
+
+async function fetchSpeech(speaker, text, preview=false, voiceOverride=''){
+  const spokenText = preview ? text : textForSpeech(text);
+  const key = speechCacheKey(speaker, spokenText, preview, voiceOverride);
+
+  if(!preview && speechCache.has(key)){
+    return await speechCache.get(key);
+  }
+
+  const requestPromise = (async ()=>{
+    const r = await fetch('/api/speech', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        speaker,
+        text: spokenText,
+        preview,
+        voice: characterVoices[speaker] || ''
+      })
+    });
+    if(!r.ok){
+      let message = 'Speech generation failed.';
+      try{
+        const data = await r.json();
+        message = data.error || message;
+      }catch(_){}
+      throw new Error(message);
+    }
+    return await r.blob();
+  })();
+
+  if(!preview){
+    speechCache.set(key, requestPromise);
+  }
+
+  try{
+    return await requestPromise;
+  }catch(e){
+    if(!preview) speechCache.delete(key);
+    throw e;
+  }
+}
+
+function prefetchTurnAudio(turns){
+  if(!autoRead || !Array.isArray(turns)) return;
+  // Fire all TTS requests immediately; playback remains in dialogue order.
+  turns.forEach(t=>{
+    if(t && t.speaker && t.text){
+      fetchSpeech(t.speaker, t.text).catch(()=>{});
+    }
+  });
+}
+
+async function playTurnAudio(speaker, text, preview=false, voiceOverride=''){
+  if(!text && !preview) return;
+  audioPlaying = true;
+  audioStatus.textContent = `Loading ${speaker}'s voice.`;
+
+  try{
+    const blob = await fetchSpeech(speaker, text, preview, voiceOverride);
+    const url = URL.createObjectURL(blob);
+
+    if(currentAudio){
+      currentAudio.pause();
+      currentAudio = null;
+    }
+
+    currentAudio = new Audio(url);
+    lastAudioTurn = {speaker, text};
+
+    currentAudio.onplay = () => {
+      audioStatus.textContent = `Playing ${speaker}'s dialogue.`;
+    };
+    currentAudio.onended = () => {
+      URL.revokeObjectURL(url);
+      currentAudio = null;
+      audioPlaying = false;
+      audioStatus.textContent = 'Audio finished.';
+      playNextQueuedAudio();
+    };
+    currentAudio.onerror = () => {
+      URL.revokeObjectURL(url);
+      currentAudio = null;
+      audioPlaying = false;
+      audioStatus.textContent = 'Audio playback failed.';
+      playNextQueuedAudio();
+    };
+
+    await currentAudio.play();
+  }catch(e){
+    audioPlaying = false;
+    audioStatus.textContent = e.message;
+    playNextQueuedAudio();
+  }
+}
+
+function queueTurnAudio(speaker, text){
+  audioQueue.push({speaker, text});
+  if(!audioPlaying) playNextQueuedAudio();
+}
+
+function playNextQueuedAudio(){
+  if(audioPlaying || !audioQueue.length) return;
+  const next = audioQueue.shift();
+  playTurnAudio(next.speaker, next.text);
+}
+
+audioToggle.addEventListener('click', ()=>{
+  autoRead = !autoRead;
+  audioToggle.setAttribute('aria-pressed', autoRead ? 'true' : 'false');
+  audioToggle.textContent = autoRead ? '🔊 Character audio: On' : '🔊 Character audio: Off';
+  audioToggle.setAttribute('aria-label', autoRead ? 'Turn character audio off' : 'Turn character audio on');
+  audioStatus.textContent = autoRead ? 'Character audio is on.' : 'Character audio is off.';
+  if(autoRead){
+    fetchSpeech('Prof. Epps', FIRST_AUDIO_BRIDGE).catch(()=>{});
+  }
+  if(!autoRead){
+    audioQueue = [];
+    if(currentAudio){
+      currentAudio.pause();
+      currentAudio = null;
+    }
+    audioPlaying = false;
+  }
+});
+
+replayLast.addEventListener('click', ()=>{
+  if(lastAudioTurn){
+    audioQueue = [];
+    if(currentAudio){
+      currentAudio.pause();
+      currentAudio = null;
+    }
+    audioPlaying = false;
+    playTurnAudio(lastAudioTurn.speaker, lastAudioTurn.text);
+  } else {
+    audioStatus.textContent = 'There is no previous dialogue to replay yet.';
+  }
+});
+
+pauseAudio.addEventListener('click', ()=>{
+  audioQueue = [];
+  if(currentAudio){
+    currentAudio.pause();
+    currentAudio = null;
+  }
+  audioPlaying = false;
+  audioStatus.textContent = 'Audio stopped.';
+});
+
+focusConversation.addEventListener('click', ()=>{
+  focusMode = !focusMode;
+  focusConversation.setAttribute('aria-pressed', focusMode ? 'true' : 'false');
+  focusConversation.textContent = focusMode ? 'Restore room view' : 'Focus conversation';
+  roomPct = focusMode ? 45 : 58;
+  applyRoomWidth();
+  updateDividerAria();
+});
+
+function updateDividerAria(){
+  divider.setAttribute('aria-valuenow', Math.round(roomPct));
+  divider.setAttribute('aria-valuetext', `Room uses ${Math.round(roomPct)} percent of the window`);
+}
+
+divider.addEventListener('keydown', (e)=>{
+  if(window.innerWidth <= 900) return;
+  if(e.key === 'ArrowLeft'){
+    e.preventDefault();
+    roomPct = Math.max(42, roomPct - 2);
+    applyRoomWidth();
+    updateDividerAria();
+  } else if(e.key === 'ArrowRight'){
+    e.preventDefault();
+    roomPct = Math.min(80, roomPct + 2);
+    applyRoomWidth();
+    updateDividerAria();
+  } else if(e.key === 'Home'){
+    e.preventDefault();
+    roomPct = 42;
+    applyRoomWidth();
+    updateDividerAria();
+  } else if(e.key === 'End'){
+    e.preventDefault();
+    roomPct = 80;
+    applyRoomWidth();
+    updateDividerAria();
+  }
+});
+
+</script>
+</body>
+</html>
