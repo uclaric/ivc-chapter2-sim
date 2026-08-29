@@ -1,9 +1,20 @@
 from flask import Flask, render_template, request, jsonify, session, send_file
 from openai import OpenAI
+from docx import Document
+from docx.shared import Pt
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
+from reportlab.lib.units import inch
 import os
 import json
 import random
+import re
+import unicodedata
+import secrets
 from io import BytesIO
+from xml.sax.saxutils import escape
 from werkzeug.middleware.proxy_fix import ProxyFix
 import logging
 
@@ -18,6 +29,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 IS_PRODUCTION = os.environ.get("SIM_PRODUCTION", "0") == "1"
 SIM_SECRET_KEY = os.environ.get("SIM_SECRET_KEY", "dev-only-change-me")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+SIM_INSTRUCTOR_TOKEN = os.environ.get("SIM_INSTRUCTOR_TOKEN", "")
 
 app.secret_key = SIM_SECRET_KEY
 app.config.update(
@@ -215,6 +227,7 @@ def api_start():
     session["question_index"] = 0
     session["question_started"] = False
     session["question_results"] = []
+    session["sim_complete"] = False
 
     user_input = f'''
 The real student has just entered the Chapter 2 discussion room and introduced themself:
@@ -265,6 +278,7 @@ def api_reply():
             "wait_for_student": False,
             "question_result": "answered",
             "complete": True,
+            "sim_complete": True,
         })
 
     started = bool(session.get("question_started", False))
@@ -325,12 +339,23 @@ Keep the room conversational. Prof. Epps does not automatically respond first. H
                 session["question_index"] = idx + 1
                 session["question_started"] = True  # response may already have introduced the next target
                 if idx + 1 >= len(plan):
+                    session["sim_complete"] = True
                     payload["complete"] = True
+                    payload["sim_complete"] = True
                     payload["wait_for_student"] = False
+                    visible_text = " ".join(str(t.get("text", "")) for t in payload.get("turns", [])).lower()
+                    if "sim-discussion is complete" not in visible_text and "sim discussion is complete" not in visible_text:
+                        payload["turns"].append({
+                            "speaker": "Prof. Epps",
+                            "text": f"All right, {name}, that completes your Chapter 2 Sim-Discussion. Before you submit, you can choose whether you'd like a brief preliminary assessment of how you did.",
+                            "action": "",
+                            "expression": "amused",
+                        })
             elif result == "clarify":
                 session["question_started"] = True
 
         payload["progress"] = min(int(session.get("question_index", 0)), 4)
+        payload["sim_complete"] = bool(session.get("sim_complete", False))
         # Hidden grading metadata is returned for the client to persist, but the UI does not display it.
         payload["grading_marker"] = {
             "question_id": current["id"],
@@ -342,6 +367,143 @@ Keep the room conversational. Prof. Epps does not automatically respond first. H
     except Exception:
         logger.exception("OpenAI reply request failed")
         return jsonify({"error": "The room had trouble responding. Your typed response is still visible; please try again."}), 502
+
+
+ASSESSMENT_INSTRUCTIONS = """
+You are generating a preliminary learning assessment for a completed POLS C1000 Chapter 2 Sim-Discussion.
+This is NOT the professor's final grade and must never include points, percentages, letter grades, rubric scores, or numerical scores.
+
+Choose exactly one level:
+- Excellent / Great Work
+- Good / Solid Work
+- Fair / Okay
+- Struggled a Bit — Consider Redoing
+- You Should Seriously Consider Redoing
+
+Base the assessment only on the student's participation visible in the transcript, considering:
+1. meaningful participation and engagement,
+2. accurate understanding of Chapter 2 Congress and representation course material,
+3. reasoning, evidence, tradeoffs, contradictions, and response to other perspectives,
+4. clear communication in the student's own words.
+
+Pay particular attention to the Chapter 2 themes:
+- representation and democratic accountability,
+- districts, elections, redistricting, gerrymandering, and political incentives,
+- lawmaking, leadership, committees, Senate/House procedures, compromise, and gridlock,
+- money, lobbying, party pressure, polarization, institutional norms, and constitutional duty.
+
+Return valid JSON only:
+{
+  "level": "one allowed level",
+  "summary": "one concise sentence",
+  "points": ["3 to 5 concise observations"]
+}
+
+Be specific about strengths and areas to improve. If the student struggled, identify the concepts or reasoning problems clearly and recommend redoing the Sim when appropriate. Do not be harsh, vague, or patronizing.
+"""
+
+
+@app.post("/api/assessment")
+def api_assessment():
+    if not session.get("sim_complete"):
+        return jsonify({"error": "The Sim must be completed before a preliminary assessment is available."}), 409
+
+    missing = require_openai()
+    if missing:
+        return missing
+
+    data = request.get_json(force=True, silent=True) or {}
+    transcript_text = str(data.get("transcript") or "").strip()
+    if not transcript_text:
+        return jsonify({"error": "No transcript was received for assessment."}), 400
+    if len(transcript_text) > 250_000:
+        return jsonify({"error": "That transcript is too large to assess."}), 413
+
+    try:
+        response = client.responses.create(
+            model=MODEL,
+            instructions=ASSESSMENT_INSTRUCTIONS,
+            input=transcript_text,
+        )
+        raw = (response.output_text or "").strip()
+        payload = json.loads(raw)
+
+        allowed_levels = {
+            "Excellent / Great Work",
+            "Good / Solid Work",
+            "Fair / Okay",
+            "Struggled a Bit — Consider Redoing",
+            "You Should Seriously Consider Redoing",
+        }
+        level = str(payload.get("level") or "").strip()
+        if level not in allowed_levels:
+            raise ValueError("Invalid assessment level.")
+
+        summary = str(payload.get("summary") or "").strip()[:800]
+        points = payload.get("points") or []
+        if not isinstance(points, list):
+            points = []
+        cleaned_points = [str(p).strip()[:600] for p in points if str(p).strip()][:5]
+        if len(cleaned_points) < 3:
+            raise ValueError("Assessment needs at least three observations.")
+
+        return jsonify({
+            "level": level,
+            "summary": summary,
+            "points": cleaned_points,
+            "disclaimer": "This is a preliminary learning assessment, not your course grade. Prof. Epps independently grades your complete Sim-Discussion using the course rubric."
+        })
+    except Exception:
+        logger.exception("Preliminary assessment generation failed")
+        return jsonify({"error": "The preliminary assessment could not be generated just now. You may continue to submission without it."}), 502
+
+
+def instructor_token_valid(candidate):
+    if not SIM_INSTRUCTOR_TOKEN or not candidate:
+        return False
+    try:
+        return secrets.compare_digest(str(candidate), SIM_INSTRUCTOR_TOKEN)
+    except Exception:
+        return False
+
+
+@app.get("/api/instructor/status")
+def api_instructor_status():
+    token = request.args.get("token", "")
+    return jsonify({"authorized": instructor_token_valid(token)})
+
+
+@app.post("/api/instructor/skip")
+def api_instructor_skip():
+    data = request.get_json(force=True, silent=True) or {}
+    token = str(data.get("token") or "")
+    if not instructor_token_valid(token):
+        return jsonify({"error": "Instructor test mode is not authorized."}), 403
+
+    plan = session.get("question_plan") or build_question_plan()
+    session["question_plan"] = plan
+    session["question_index"] = len(plan)
+    session["question_started"] = True
+    session["question_results"] = [
+        {"id": q.get("id", f"q{i+1}"), "result": "answered", "difficulty": q.get("difficulty", "")}
+        for i, q in enumerate(plan)
+    ]
+    session["sim_complete"] = True
+    name = session.get("student_name", "Professor")
+
+    return jsonify({
+        "turns": [{
+            "speaker": "Prof. Epps",
+            "text": f"Instructor test mode: jumping to the Chapter 2 completion workflow for {name}.",
+            "action": "",
+            "expression": "amused",
+        }],
+        "wait_for_student": False,
+        "question_result": "answered",
+        "progress": 4,
+        "complete": True,
+        "sim_complete": True,
+    })
 
 
 @app.post("/api/transcribe")
@@ -402,6 +564,198 @@ def api_speech():
     except Exception:
         logger.exception("Speech generation failed")
         return jsonify({"error": "Speech generation failed. Text dialogue is still available."}), 502
+
+
+def safe_student_filename(name):
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", (name or "Student").strip())
+    cleaned = cleaned.strip("._-")
+    return cleaned[:80] or "Student"
+
+
+def export_payload():
+    data = request.get_json(force=True, silent=True) or {}
+    transcript_text = str(data.get("transcript") or "").strip()
+    student_name = str(data.get("student_name") or session.get("student_name") or "Student").strip()
+
+    if not transcript_text:
+        return None, None, (jsonify({"error": "No transcript was received for export."}), 400)
+    if len(transcript_text) > 250_000:
+        return None, None, (jsonify({"error": "That transcript is too large to export."}), 413)
+
+    return transcript_text, student_name[:120], None
+
+
+def normalize_pdf_text(value):
+    replacements = {
+        "’": "'", "‘": "'", "“": '"', "”": '"',
+        "—": "-", "–": "-", "…": "...", "•": "-",
+        "→": "->", "←": "<-", "·": "-", "🎙️": "", "📋": "",
+        "📄": "", "🔊": "", "↻": "", "Ⅱ": "II",
+    }
+    value = str(value or "")
+    for source, target in replacements.items():
+        value = value.replace(source, target)
+    return unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+
+
+@app.post("/api/export/docx")
+def api_export_docx():
+    transcript_text, student_name, error = export_payload()
+    if error:
+        return error
+
+    try:
+        output = BytesIO()
+        document = Document()
+        normal_style = document.styles["Normal"]
+        normal_style.font.name = "Arial"
+        normal_style.font.size = Pt(11)
+
+        lines = transcript_text.splitlines()
+        for index, raw_line in enumerate(lines):
+            line = raw_line.rstrip()
+
+            if not line:
+                document.add_paragraph("")
+                continue
+
+            if index == 0:
+                p = document.add_paragraph()
+                run = p.add_run(line)
+                run.bold = True
+                run.font.size = Pt(15)
+                continue
+
+            if line in {"CHAPTER 2 SIM-DISCUSSION", "Congress and Representation: Who Speaks for Whom?"}:
+                p = document.add_paragraph()
+                run = p.add_run(line)
+                run.bold = True
+                run.font.size = Pt(12)
+                continue
+
+            if set(line) == {"-"}:
+                document.add_paragraph("────────────────────────────────────────")
+                continue
+
+            if line.endswith(":") or " — STUDENT RESPONSE:" in line:
+                p = document.add_paragraph()
+                run = p.add_run(line)
+                run.bold = True
+                continue
+
+            document.add_paragraph(line)
+
+        document.save(output)
+        output.seek(0)
+
+        filename = f"Chapter_2_Sim_Discussion_{safe_student_filename(student_name)}.docx"
+        return send_file(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            as_attachment=True,
+            download_name=filename,
+        )
+    except Exception:
+        logger.exception("DOCX transcript export failed")
+        return jsonify({"error": "The DOCX file could not be created just now. You can still copy the transcript."}), 500
+
+
+@app.post("/api/export/pdf")
+def api_export_pdf():
+    transcript_text, student_name, error = export_payload()
+    if error:
+        return error
+
+    try:
+        output = BytesIO()
+        doc = SimpleDocTemplate(
+            output,
+            pagesize=letter,
+            rightMargin=0.6 * inch,
+            leftMargin=0.6 * inch,
+            topMargin=0.6 * inch,
+            bottomMargin=0.6 * inch,
+            title="Chapter 2 Sim-Discussion Transcript",
+            author="POLS C1000",
+        )
+
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            "SimTitle",
+            parent=styles["Title"],
+            fontName="Helvetica-Bold",
+            fontSize=15,
+            leading=18,
+            alignment=TA_CENTER,
+            spaceAfter=8,
+        )
+        subhead_style = ParagraphStyle(
+            "SimSubhead",
+            parent=styles["Heading2"],
+            fontName="Helvetica-Bold",
+            fontSize=11,
+            leading=14,
+            spaceBefore=4,
+            spaceAfter=4,
+        )
+        body_style = ParagraphStyle(
+            "SimBody",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=10.5,
+            leading=14,
+            spaceAfter=5,
+        )
+        speaker_style = ParagraphStyle(
+            "SimSpeaker",
+            parent=body_style,
+            fontName="Helvetica-Bold",
+            spaceBefore=6,
+            spaceAfter=2,
+        )
+
+        story = []
+        lines = transcript_text.splitlines()
+        for index, raw_line in enumerate(lines):
+            line = normalize_pdf_text(raw_line).strip()
+
+            if not line:
+                story.append(Spacer(1, 5))
+                continue
+
+            if index == 0:
+                story.append(Paragraph(escape(line), title_style))
+                continue
+
+            if line in {"CHAPTER 2 SIM-DISCUSSION", "Congress and Representation: Who Speaks for Whom?"}:
+                story.append(Paragraph(escape(line), subhead_style))
+                continue
+
+            if set(line) == {"-"}:
+                story.append(Spacer(1, 4))
+                story.append(HRFlowable(width="100%", thickness=0.7, color="#777777"))
+                story.append(Spacer(1, 4))
+                continue
+
+            escaped_line = escape(line)
+            if line.endswith(":") or " - STUDENT RESPONSE:" in line:
+                story.append(Paragraph(escaped_line, speaker_style))
+            else:
+                story.append(Paragraph(escaped_line, body_style))
+
+        doc.build(story)
+        output.seek(0)
+
+        filename = f"Chapter_2_Sim_Discussion_{safe_student_filename(student_name)}.pdf"
+        return send_file(
+            output,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=filename,
+        )
+    except Exception:
+        logger.exception("PDF transcript export failed")
+        return jsonify({"error": "The PDF file could not be created just now. You can still copy the transcript."}), 500
 
 
 @app.post("/api/reset")
