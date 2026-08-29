@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chapter 2 Sim-Discussion</title>
+<title>Chapter 2 Sim-Discussion v5</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap');
 :root{
@@ -449,6 +449,97 @@ input:focus, textarea:focus,
   font-size:1.05rem
 }
 
+.assessment-card{
+  margin-top:14px;
+  border:1px solid #76591d;
+  background:#151310;
+  border-radius:14px;
+  padding:16px
+}
+.assessment-card h2{
+  margin:0 0 8px;
+  color:#e1ba61;
+  font-family:'Montserrat','Inter',Arial,sans-serif;
+  font-size:1.08rem
+}
+.assessment-choice-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px
+}
+.assessment-choice-row button{
+  margin:0
+}
+.assessment-result-level{
+  color:#ffffff;
+  font-weight:800;
+  font-size:1.05rem;
+  margin:8px 0
+}
+.assessment-result-list{
+  margin:10px 0 12px;
+  padding-left:22px;
+  color:#eee4d0
+}
+.assessment-result-list li{margin-bottom:7px}
+.instructor-test{
+  border-color:#8e69d8!important;
+  color:#eadfff!important
+}
+.instructor-test:hover{background:#281d38!important}
+@media(max-width:620px){
+  .assessment-choice-row{grid-template-columns:1fr}
+}
+
+.final-action-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px
+}
+.final-action-grid button,
+.final-action-grid a{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:.9rem;
+  font-weight:800;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer
+}
+.final-action-grid .download-action{
+  border:1px solid var(--gold);
+  background:var(--gold);
+  color:#17110b
+}
+.final-action-grid .copy-action{
+  border:1px solid #8f6c25;
+  background:#171512;
+  color:#f6e8c1
+}
+.final-action-grid .canvas-action{
+  grid-column:1 / -1;
+  border:2px solid #ffffff;
+  background:var(--red);
+  color:#ffffff
+}
+.final-action-grid button:disabled{opacity:.55;cursor:wait}
+.final-export-note{
+  margin:10px 0 0;
+  color:var(--muted);
+  font-size:.8rem;
+  line-height:1.4
+}
+@media(max-width:520px){
+  .final-action-grid{grid-template-columns:1fr}
+  .final-action-grid .canvas-action{grid-column:auto}
+}
+
 
 @media(max-width:900px){
   .room{
@@ -476,7 +567,7 @@ input:focus, textarea:focus,
 <main class="app">
   <section class="room-wrap" id="roomWrap" aria-label="Chapter 2 discussion room visualization">
     <div class="room" id="room"><img id="roomImage"
- src="/static/chapter2_room.png" alt="Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room, welcoming the arriving student."></div>
+ src="/static/chapter2_room.png" alt="Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room."></div>
 
     <div class="access-toolbar room-side-toolbar" aria-label="Accessibility and audio controls">
       <button type="button" id="audioToggle" aria-pressed="false" aria-label="Turn character audio on">🔊 Audio: Off</button>
@@ -485,6 +576,7 @@ input:focus, textarea:focus,
       <button type="button" id="focusConversation" aria-pressed="false" aria-label="Enlarge the conversation panel">Focus dialogue</button>
       <button type="button" id="transcriptBtn" aria-expanded="false" aria-controls="transcriptPanel">📋 Transcript</button>
       <button type="button" id="helpBtn" aria-expanded="false" aria-controls="helpPanel">❓ Help</button>
+      <button type="button" id="instructorSkip" class="hidden instructor-test" aria-label="Instructor test mode: skip to completion">🧪 Skip to completion</button>
     </div>
 
     <section id="transcriptPanel" class="utility-panel hidden" aria-labelledby="transcriptPanelTitle">
@@ -573,10 +665,49 @@ input:focus, textarea:focus,
         <button class="primary" id="send">Continue</button>
       </div>
 
+      <section id="assessmentChoiceCard" class="assessment-card hidden" aria-labelledby="assessmentChoiceTitle">
+        <h2 id="assessmentChoiceTitle">Chapter 2 Sim-Discussion Complete ✅</h2>
+        <p style="margin:0 0 8px;color:#eee4d0;font-size:.88rem;line-height:1.45">
+          You have completed the required discussion. Would you like a brief preliminary assessment of how you did before you prepare your submission?
+        </p>
+        <p style="margin:0;color:#c8c0b2;font-size:.8rem;line-height:1.4">
+          This is optional and is not your course grade.
+        </p>
+        <div class="assessment-choice-row">
+          <button type="button" id="assessmentYes" class="primary">Yes — Show My Assessment</button>
+          <button type="button" id="assessmentNo" class="primary">No — Continue to Submission</button>
+        </div>
+        <div id="assessmentStatus" class="status" aria-live="polite"></div>
+      </section>
+
+      <section id="assessmentResultCard" class="assessment-card hidden" aria-labelledby="assessmentResultTitle">
+        <h2 id="assessmentResultTitle">Your Preliminary Learning Assessment</h2>
+        <div id="assessmentLevel" class="assessment-result-level"></div>
+        <p id="assessmentSummary" style="margin:0 0 8px;color:#eee4d0;font-size:.88rem;line-height:1.45"></p>
+        <ul id="assessmentPoints" class="assessment-result-list"></ul>
+        <p style="margin:8px 0 12px;color:#d7b05f;font-size:.8rem;line-height:1.4">
+          This is a preliminary learning assessment, not your course grade. Prof. Epps independently grades your complete Sim-Discussion using the course rubric.
+        </p>
+        <button type="button" id="assessmentContinue" class="primary">Continue to Submission</button>
+      </section>
+
       <section id="finalTranscriptCard" class="final-transcript-card hidden" aria-labelledby="finalTranscriptTitle">
-        <h2 id="finalTranscriptTitle">Ready to upload your Sim transcript to Canvas?</h2>
-        <p style="margin:0 0 10px;color:#eee4d0;font-size:.86rem">Copy the full transcript, return to the Canvas assignment, paste it into Text Entry, review it, and submit.</p>
-        <button type="button" id="finalCopyTranscript" class="primary">📋 Copy Full Transcript</button>
+        <h2 id="finalTranscriptTitle">Your Chapter 2 Sim-Discussion is complete.</h2>
+        <p style="margin:0 0 8px;color:#eee4d0;font-size:.88rem;line-height:1.45">
+          Download your complete Submission Packet in the format you prefer. Then return to Canvas and upload the file to this assignment.
+        </p>
+        <p style="margin:0;color:#d7b05f;font-size:.82rem;font-weight:700">Keep this Sim open until your file finishes downloading.</p>
+
+        <div class="final-action-grid">
+          <button type="button" id="downloadDocx" class="download-action">⬇ Download DOCX</button>
+          <button type="button" id="downloadPdf" class="download-action">⬇ Download PDF</button>
+          <button type="button" id="finalCopyTranscript" class="copy-action">📋 Copy Transcript</button>
+          <a id="returnToCanvas" class="canvas-action" href="https://imperial.instructure.com/courses/32396/assignments">Return to Canvas Assignment</a>
+        </div>
+
+        <p class="final-export-note">
+          If a download is blocked, use <strong>Copy Transcript</strong> as a backup, paste it into Word or Google Docs, and save it as a PDF or DOCX before uploading to Canvas.
+        </p>
         <div id="finalCopyTranscriptStatus" class="status" aria-live="polite"></div>
       </section>
           <div id="audioStatus" class="sr-only" aria-live="polite"></div>
@@ -602,7 +733,30 @@ const transcriptBtn=document.getElementById('transcriptBtn');
 const transcriptPanel=document.getElementById('transcriptPanel');
 const finalCopyTranscript=document.getElementById('finalCopyTranscript');
 const finalCopyTranscriptStatus=document.getElementById('finalCopyTranscriptStatus');
+const downloadDocx=document.getElementById('downloadDocx');
+const downloadPdf=document.getElementById('downloadPdf');
+const returnToCanvas=document.getElementById('returnToCanvas');
+const assessmentChoiceCard=document.getElementById('assessmentChoiceCard');
+const assessmentResultCard=document.getElementById('assessmentResultCard');
+const assessmentYes=document.getElementById('assessmentYes');
+const assessmentNo=document.getElementById('assessmentNo');
+const assessmentStatus=document.getElementById('assessmentStatus');
+const assessmentLevel=document.getElementById('assessmentLevel');
+const assessmentSummary=document.getElementById('assessmentSummary');
+const assessmentPoints=document.getElementById('assessmentPoints');
+const assessmentContinue=document.getElementById('assessmentContinue');
+const finalTranscriptCard=document.getElementById('finalTranscriptCard');
+const instructorSkip=document.getElementById('instructorSkip');
+
 introCard.classList.add('hidden');
+
+const CANVAS_COURSE_ASSIGNMENTS_URL='https://imperial.instructure.com/courses/32396/assignments';
+const canvasReferrer=(document.referrer || '').trim();
+if(canvasReferrer.includes('imperial.instructure.com/courses/32396/assignments/')){
+  returnToCanvas.href=canvasReferrer;
+}else{
+  returnToCanvas.href=CANVAS_COURSE_ASSIGNMENTS_URL;
+}
 
 const helpBtn = document.getElementById('helpBtn');
 const helpPanel = document.getElementById('helpPanel');
@@ -613,9 +767,12 @@ let roomPct = 58;
 let zoom = 1;
 let dragging = false;
 
-const transcriptStorageKey = 'ivc_ch2_sim_transcript_v1';
-const simStateStorageKey = 'ivc_ch2_sim_started_v1';
-const simMetaStorageKey = 'ivc_ch2_sim_meta_v1';
+const transcriptStorageKey = 'ivc_ch2_sim_transcript_v13';
+const simStateStorageKey = 'ivc_ch2_sim_started_v13';
+const simMetaStorageKey = 'ivc_ch2_sim_meta_v13';
+const prelimAssessmentStorageKey = 'ivc_ch2_preliminary_assessment_v1';
+const simCompletionStorageKey = 'ivc_ch2_sim_complete_v1';
+
 
 const characterExpressions = {
   'Prof. Epps': {
@@ -667,11 +824,46 @@ const characterExpressions = {
     thinking:'/static/expressions/freja/thinking.png',
     surprised:'/static/expressions/freja/surprised.png'
   },
-  'James Madison': {neutral:'/static/expressions/guests/james_madison/neutral.png', smile:'/static/expressions/guests/james_madison/smile.png', amused:'/static/expressions/guests/james_madison/amused.png', skeptical:'/static/expressions/guests/james_madison/skeptical.png', thinking:'/static/expressions/guests/james_madison/thinking.png', surprised:'/static/expressions/guests/james_madison/surprised.png'},
-  'Henry Clay': {neutral:'/static/expressions/guests/henry_clay/neutral.png', smile:'/static/expressions/guests/henry_clay/smile.png', amused:'/static/expressions/guests/henry_clay/amused.png', skeptical:'/static/expressions/guests/henry_clay/skeptical.png', thinking:'/static/expressions/guests/henry_clay/thinking.png', surprised:'/static/expressions/guests/henry_clay/surprised.png'},
-  'Lyndon B. Johnson': {neutral:'/static/expressions/guests/lyndon_johnson/neutral.png', smile:'/static/expressions/guests/lyndon_johnson/smile.png', amused:'/static/expressions/guests/lyndon_johnson/amused.png', skeptical:'/static/expressions/guests/lyndon_johnson/skeptical.png', thinking:'/static/expressions/guests/lyndon_johnson/thinking.png', surprised:'/static/expressions/guests/lyndon_johnson/surprised.png'},
-  'Shirley Chisholm': {neutral:'/static/expressions/guests/shirley_chisholm/neutral.png', smile:'/static/expressions/guests/shirley_chisholm/smile.png', amused:'/static/expressions/guests/shirley_chisholm/amused.png', skeptical:'/static/expressions/guests/shirley_chisholm/skeptical.png', thinking:'/static/expressions/guests/shirley_chisholm/thinking.png', surprised:'/static/expressions/guests/shirley_chisholm/surprised.png'},
-  'John McCain': {neutral:'/static/expressions/guests/john_mccain/neutral.png', smile:'/static/expressions/guests/john_mccain/smile.png', amused:'/static/expressions/guests/john_mccain/amused.png', skeptical:'/static/expressions/guests/john_mccain/skeptical.png', thinking:'/static/expressions/guests/john_mccain/thinking.png', surprised:'/static/expressions/guests/john_mccain/surprised.png'}
+  'James Madison': {
+    neutral:'/static/expressions/guests/james_madison/neutral.png',
+    smile:'/static/expressions/guests/james_madison/smile.png',
+    amused:'/static/expressions/guests/james_madison/amused.png',
+    skeptical:'/static/expressions/guests/james_madison/skeptical.png',
+    thinking:'/static/expressions/guests/james_madison/thinking.png',
+    surprised:'/static/expressions/guests/james_madison/surprised.png'
+  },
+  'Henry Clay': {
+    neutral:'/static/expressions/guests/henry_clay/neutral.png',
+    smile:'/static/expressions/guests/henry_clay/smile.png',
+    amused:'/static/expressions/guests/henry_clay/amused.png',
+    skeptical:'/static/expressions/guests/henry_clay/skeptical.png',
+    thinking:'/static/expressions/guests/henry_clay/thinking.png',
+    surprised:'/static/expressions/guests/henry_clay/surprised.png'
+  },
+  'Lyndon B. Johnson': {
+    neutral:'/static/expressions/guests/lyndon_johnson/neutral.png',
+    smile:'/static/expressions/guests/lyndon_johnson/smile.png',
+    amused:'/static/expressions/guests/lyndon_johnson/amused.png',
+    skeptical:'/static/expressions/guests/lyndon_johnson/skeptical.png',
+    thinking:'/static/expressions/guests/lyndon_johnson/thinking.png',
+    surprised:'/static/expressions/guests/lyndon_johnson/surprised.png'
+  },
+  'Shirley Chisholm': {
+    neutral:'/static/expressions/guests/shirley_chisholm/neutral.png',
+    smile:'/static/expressions/guests/shirley_chisholm/smile.png',
+    amused:'/static/expressions/guests/shirley_chisholm/amused.png',
+    skeptical:'/static/expressions/guests/shirley_chisholm/skeptical.png',
+    thinking:'/static/expressions/guests/shirley_chisholm/thinking.png',
+    surprised:'/static/expressions/guests/shirley_chisholm/surprised.png'
+  },
+  'John McCain': {
+    neutral:'/static/expressions/guests/john_mccain/neutral.png',
+    smile:'/static/expressions/guests/john_mccain/smile.png',
+    amused:'/static/expressions/guests/john_mccain/amused.png',
+    skeptical:'/static/expressions/guests/john_mccain/skeptical.png',
+    thinking:'/static/expressions/guests/john_mccain/thinking.png',
+    surprised:'/static/expressions/guests/john_mccain/surprised.png'
+  }
 };
 
 const allowedExpressions = new Set(['neutral','smile','amused','skeptical','thinking','surprised']);
@@ -743,6 +935,8 @@ function clearSavedTranscript(){
     localStorage.removeItem(transcriptStorageKey);
     localStorage.removeItem(simStateStorageKey);
     localStorage.removeItem(simMetaStorageKey);
+    localStorage.removeItem(prelimAssessmentStorageKey);
+    localStorage.removeItem(simCompletionStorageKey);
   }catch(_){}
 }
 
@@ -881,14 +1075,69 @@ function addStudent(text, persist=true, shouldScroll=true){
 }
 
 
+function preliminaryAssessment(){
+  try{return JSON.parse(localStorage.getItem(prelimAssessmentStorageKey) || 'null');}catch(_){return null;}
+}
+
+function savePreliminaryAssessment(value){
+  try{localStorage.setItem(prelimAssessmentStorageKey, JSON.stringify(value));}catch(_){}
+}
+
+function showSubmissionCard(){
+  assessmentChoiceCard.classList.add('hidden');
+  assessmentResultCard.classList.add('hidden');
+  finalTranscriptCard.classList.remove('hidden');
+  replyCard.classList.add('hidden');
+  requestAnimationFrame(()=>finalTranscriptCard.scrollIntoView({behavior:'smooth', block:'nearest'}));
+}
+
+function showCompletionWorkflow(){
+  try{localStorage.setItem(simCompletionStorageKey, '1');}catch(_){}
+  replyCard.classList.add('hidden');
+  finalTranscriptCard.classList.add('hidden');
+
+  const existing=preliminaryAssessment();
+  if(existing){
+    if(existing.declined){
+      showSubmissionCard();
+    }else{
+      renderAssessment(existing);
+      assessmentChoiceCard.classList.add('hidden');
+      assessmentResultCard.classList.remove('hidden');
+    }
+  }else{
+    assessmentResultCard.classList.add('hidden');
+    assessmentChoiceCard.classList.remove('hidden');
+    requestAnimationFrame(()=>assessmentChoiceCard.scrollIntoView({behavior:'smooth', block:'nearest'}));
+  }
+}
+
 function maybeShowFinalTranscript(turns){
   if(!Array.isArray(turns)) return;
-  const last=turns[turns.length-1];
-  if(!last || !last.text) return;
-  const t=last.text.toLowerCase();
-  if(t.includes('ready to upload your sim transcript') || t.includes('wraps up this sim-discussion') || t.includes('wraps up this sim discussion')){
-    document.getElementById('finalTranscriptCard').classList.remove('hidden');
+  const combined=turns.map(t=>String(t && t.text || '')).join(' ').toLowerCase();
+  if(!combined) return;
+
+  const completionSignals=[
+    'ready to upload your sim transcript',
+    'wraps up this sim-discussion',
+    'wraps up this sim discussion',
+    'sim-discussion is complete',
+    'sim discussion is complete',
+    'discussion is complete',
+    'return to canvas'
+  ];
+
+  if(completionSignals.some(signal=>combined.includes(signal))){
+    showCompletionWorkflow();
   }
+}
+
+function handleSimCompletion(data){
+  if(data && data.sim_complete){
+    showCompletionWorkflow();
+    return true;
+  }
+  return false;
 }
 
 async function postJSON(url, body){
@@ -988,7 +1237,7 @@ document.getElementById('join').addEventListener('click', async ()=>{
       )
     );
 
-    maybeShowFinalTranscript(data.turns||[]);
+    if(!handleSimCompletion(data)) maybeShowFinalTranscript(data.turns||[]);
 
     localStorage.setItem(simStateStorageKey, '1');
     document.getElementById('replyStatus').textContent='';
@@ -1034,7 +1283,7 @@ document.getElementById('send').addEventListener('click', async ()=>{
       )
     );
 
-    maybeShowFinalTranscript(data.turns||[]);
+    if(!handleSimCompletion(data)) maybeShowFinalTranscript(data.turns||[]);
     document.getElementById('replyStatus').textContent='';
   }catch(e){
     document.getElementById('replyStatus').textContent=e.message;
@@ -1209,6 +1458,9 @@ if(localStorage.getItem(simStateStorageKey) === '1'){
     replyCard.classList.remove('hidden');
     document.getElementById('replyStatus').textContent =
       'Conversation restored after refresh.';
+    if(localStorage.getItem(simCompletionStorageKey) === '1'){
+      showCompletionWorkflow();
+    }
   }
 }
 
@@ -1245,15 +1497,158 @@ function buildTranscriptText(){
     lines.push('');
   });
   lines.push('--------------------------------------------------');
-  lines.push('End of copied Sim transcript');
+  lines.push('');
+  lines.push('PRELIMINARY LEARNING ASSESSMENT');
+  const assessment=preliminaryAssessment();
+  if(assessment && assessment.declined){
+    lines.push('Student declined the optional preliminary assessment.');
+  }else if(assessment && assessment.level){
+    lines.push(`Overall: ${assessment.level}`);
+    if(assessment.summary) lines.push(assessment.summary);
+    (assessment.points || []).forEach(point=>lines.push(`- ${point}`));
+    lines.push('');
+    lines.push('This is a preliminary learning assessment, not the course grade. Prof. Epps independently grades the complete Sim-Discussion using the course rubric.');
+  }else{
+    lines.push('No preliminary assessment was generated.');
+  }
+  lines.push('');
+  lines.push('--------------------------------------------------');
+  lines.push('End of Sim-Discussion Submission Packet');
   return lines.join('\n');
 }
+
+
+function renderAssessment(data){
+  assessmentLevel.textContent=data.level || '';
+  assessmentSummary.textContent=data.summary || '';
+  assessmentPoints.innerHTML='';
+  (data.points || []).forEach(point=>{
+    const li=document.createElement('li');
+    li.textContent=point;
+    assessmentPoints.appendChild(li);
+  });
+}
+
+assessmentYes.addEventListener('click', async ()=>{
+  assessmentYes.disabled=true;
+  assessmentNo.disabled=true;
+  assessmentStatus.textContent='Preparing your preliminary assessment...';
+  try{
+    const response=await fetch('/api/assessment',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({transcript:buildTranscriptText()})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.error || 'The preliminary assessment could not be generated.');
+    savePreliminaryAssessment(data);
+    renderAssessment(data);
+    assessmentChoiceCard.classList.add('hidden');
+    assessmentResultCard.classList.remove('hidden');
+    assessmentStatus.textContent='';
+    requestAnimationFrame(()=>assessmentResultCard.scrollIntoView({behavior:'smooth', block:'nearest'}));
+  }catch(e){
+    assessmentStatus.textContent=(e.message || 'Assessment unavailable.') + ' You can continue to submission without it.';
+  }finally{
+    assessmentYes.disabled=false;
+    assessmentNo.disabled=false;
+  }
+});
+
+assessmentNo.addEventListener('click', ()=>{
+  savePreliminaryAssessment({declined:true});
+  showSubmissionCard();
+});
+
+assessmentContinue.addEventListener('click', ()=>showSubmissionCard());
+
+const instructorToken=(new URLSearchParams(window.location.search).get('instructor') || '').trim();
+if(instructorToken){
+  fetch(`/api/instructor/status?token=${encodeURIComponent(instructorToken)}`)
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.authorized) instructorSkip.classList.remove('hidden');
+    })
+    .catch(()=>{});
+}
+
+instructorSkip.addEventListener('click', async ()=>{
+  instructorSkip.disabled=true;
+  instructorSkip.textContent='🧪 Skipping...';
+  try{
+    const data=await postJSON('/api/instructor/skip',{token:instructorToken});
+    (data.turns||[]).forEach((t,index)=>
+      addTurn(t.speaker,t.text,t.action||'',true,expressionForTurn(t),index===0)
+    );
+    handleSimCompletion(data);
+  }catch(e){
+    document.getElementById('replyStatus').textContent=e.message || 'Instructor skip failed.';
+  }finally{
+    instructorSkip.disabled=false;
+    instructorSkip.textContent='🧪 Skip to completion';
+  }
+});
+
+async function downloadTranscript(format){
+  const button = format === 'pdf' ? downloadPdf : downloadDocx;
+  const originalLabel = button.textContent;
+  const meta = transcriptMeta();
+
+  button.disabled = true;
+  button.textContent = 'Preparing file...';
+  finalCopyTranscriptStatus.textContent = `Preparing your ${format.toUpperCase()} Submission Packet...`;
+
+  try{
+    const response = await fetch(`/api/export/${format}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        transcript:buildTranscriptText(),
+        student_name:meta.name || 'Student'
+      })
+    });
+
+    if(!response.ok){
+      let message = `The ${format.toUpperCase()} file could not be created.`;
+      try{
+        const data = await response.json();
+        message = data.error || message;
+      }catch(_){}
+      throw new Error(message);
+    }
+
+    const blob = await response.blob();
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const filenameMatch = disposition.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i);
+    const fallbackName = `Chapter_1_Sim_Discussion_${(meta.name || 'Student').replace(/[^A-Za-z0-9._-]+/g,'_')}.${format}`;
+    const filename = filenameMatch ? decodeURIComponent(filenameMatch[1].replace(/"/g,'')) : fallbackName;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+
+    finalCopyTranscriptStatus.textContent = `${format.toUpperCase()} downloaded. Now choose Return to Canvas Assignment and upload that file.`;
+  }catch(e){
+    finalCopyTranscriptStatus.textContent = `${e.message || 'Download failed.'} Use Copy Transcript as a backup.`;
+  }finally{
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
+
+downloadDocx.addEventListener('click', ()=>downloadTranscript('docx'));
+downloadPdf.addEventListener('click', ()=>downloadTranscript('pdf'));
 
 copyTranscript.addEventListener('click', async ()=>{
   const text=buildTranscriptText();
   try{
     await navigator.clipboard.writeText(text);
-    copyTranscriptStatus.textContent='Full transcript copied. Return to Canvas, paste it into Text Entry, review it, and submit.';
+    copyTranscriptStatus.textContent='Full transcript copied. As a backup, paste it into Word or Google Docs and save it as a PDF or DOCX before uploading to Canvas.';
     finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
   }catch(_){
     const temp=document.createElement('textarea');
@@ -1265,7 +1660,7 @@ copyTranscript.addEventListener('click', async ()=>{
     temp.select();
     const ok=document.execCommand('copy');
     temp.remove();
-    copyTranscriptStatus.textContent=ok ? 'Full transcript copied. Return to Canvas and paste it into Text Entry.' : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
+    copyTranscriptStatus.textContent=ok ? 'Full transcript copied. Paste it into Word or Google Docs and save it as a PDF or DOCX before uploading to Canvas.' : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
     finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
   }
 });
@@ -1300,7 +1695,12 @@ const characterVoices = {
   'Ethan':'ash',
   'Carlos':'cedar',
   'Aaliyah':'coral',
-  'Freja':'marin'
+  'Freja':'marin',
+  'James Madison':'fable',
+  'Henry Clay':'echo',
+  'Lyndon B. Johnson':'onyx',
+  'Shirley Chisholm':'sage',
+  'John McCain':'ash'
 };
 
 
@@ -1312,7 +1712,7 @@ let audioQueue = [];
 let audioPlaying = false;
 const speechCache = new Map();
 const FIRST_AUDIO_BRIDGE = "All right, let's get everybody settled in.";
-console.info('Chapter 2 Sim expression system loaded: neutral, smile, amused, skeptical, thinking, surprised; historical guest assets integrated.');
+console.info('Chapter 2 expression system loaded for core cast and historical guests.');
 
 function textForSpeech(text){
   return (text || '')
