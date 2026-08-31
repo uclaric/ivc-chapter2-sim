@@ -768,6 +768,16 @@ let zoom = 1;
 let dragging = false;
 
 const transcriptStorageKey = 'ivc_ch2_sim_transcript_v13';
+const regularRoomImage = '/static/chapter2_room.png';
+const guestRoomImage = '/static/chapter2_guests.png';
+const chapter2GuestNames = new Set([
+  'James Madison',
+  'Henry Clay',
+  'Lyndon B. Johnson',
+  'Shirley Chisholm',
+  'John McCain'
+]);
+
 const simStateStorageKey = 'ivc_ch2_sim_started_v13';
 const simMetaStorageKey = 'ivc_ch2_sim_meta_v13';
 const prelimAssessmentStorageKey = 'ivc_ch2_preliminary_assessment_v1';
@@ -934,6 +944,7 @@ function clearSavedTranscript(){
   try{
     localStorage.removeItem(transcriptStorageKey);
     localStorage.removeItem(simStateStorageKey);
+    if(roomImage){ roomImage.src = regularRoomImage; delete roomImage.dataset.guestRoomActive; }
     localStorage.removeItem(simMetaStorageKey);
     localStorage.removeItem(prelimAssessmentStorageKey);
     localStorage.removeItem(simCompletionStorageKey);
@@ -984,6 +995,16 @@ document.getElementById('resetView').addEventListener('click', ()=>{
   applyRoomWidth();
   setZoom(1);
 });
+
+function maybeSwitchToGuestRoom(turns){
+  const list = Array.isArray(turns) ? turns : [];
+  const guestPresent = list.some(turn => chapter2GuestNames.has(String(turn?.speaker || '').trim()));
+  if(guestPresent && roomImage && !roomImage.dataset.guestRoomActive){
+    roomImage.src = guestRoomImage;
+    roomImage.dataset.guestRoomActive = 'true';
+    roomImage.alt = 'Prof. Epps, the recurring student group, and Chapter 2 historical guests gathered around the discussion table.';
+  }
+}
 
 function addTurn(speaker, text, action='', persist=true, expression='', shouldScroll=true){
   const wrap=document.createElement('div');
@@ -1222,10 +1243,12 @@ document.getElementById('join').addEventListener('click', async ()=>{
       started_at:new Date().toISOString()
     }));
 
+    maybeSwitchToGuestRoom(data.turns||[]);
     prefetchTurnAudio(data.turns||[]);
 
     // Opening/introduction sequence is intentionally warm and welcoming.
     // Every core character uses the Amused/Friendly portrait here.
+    maybeSwitchToGuestRoom(data.turns||[]);
     (data.turns||[]).forEach((t,index)=>
       addTurn(
         t.speaker,
@@ -1270,6 +1293,7 @@ document.getElementById('send').addEventListener('click', async ()=>{
 
 
     const data=await postJSON('/api/reply',{text});
+    maybeSwitchToGuestRoom(data.turns||[]);
     prefetchTurnAudio(data.turns||[]);
 
     (data.turns||[]).forEach((t,index)=>
@@ -1473,7 +1497,7 @@ function buildTranscriptText(){
   const meta=transcriptMeta();
   const lines=[];
   lines.push('POLS C1000');
-  lines.push('CHAPTER 1 SIM-DISCUSSION');
+  lines.push('CHAPTER 2 SIM-DISCUSSION');
   lines.push('Constitutional Foundations, Democracy, and Federalism');
   lines.push('');
   lines.push(`Student: ${meta.name || 'Student'}`);
