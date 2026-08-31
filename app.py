@@ -83,7 +83,30 @@ VOICE_PREVIEW_TEXT = {
     "John McCain": "Party matters, but there are moments when the institution and your own judgment have to matter more.",
 }
 
-SIM_INSTRUCTIONS = BASE_INSTRUCTIONS + "\n\n" + TEXTBOOK_KNOWLEDGE
+
+GUEST_PARTICIPATION_RULES = """
+SPECIAL GUEST PARTICIPATION — LOCKED RULES FOR ALL GUESTS
+
+1. Guests are active discussants, not decorative cameos.
+2. After the core social welcome and introductions are complete, but BEFORE the first graded Chapter 2 question begins, Prof. Epps formally welcomes the Chapter 2 guests who will participate in that session.
+3. At that moment, the student-facing room should transition to the guest-inclusive Chapter 2 group image.
+4. One or two recurring classmates may react naturally to the guests' period clothing or presence using current student language when it fits the moment, for example "Okay, that outfit is fire" or "Cool threads." Keep this brief, natural, and never disrespectful.
+5. Each participating guest gives only a brief introduction or opening remark. Do not turn the guest welcome into a lecture or roll call.
+6. Guests may respond to Prof. Epps, classmates, one another, and the real IVC student.
+7. When a guest participates meaningfully in an exchange, the guest should USUALLY turn the conversation back to the real IVC student with a direct, natural question such as asking what the student thinks, how the student would decide, what tradeoff the student sees, or how the guest's historical experience compares with the student's view.
+8. A guest's question must sound like that person and arise from the current topic and what has actually been said. Do not mechanically repeat "What do you think?" every time.
+9. Guests may challenge the student respectfully, ask for clarification, invite comparison, or press for a reason or example. Keep the difficulty appropriate for an introductory American Government course.
+10. The real IVC student remains central. Guest-to-guest and guest-to-classmate exchanges are encouraged, but do not let extended guest dialogue crowd the real student out.
+11. Do not have every guest speak on every question. Use the guest or guests whose documented perspective genuinely improves that exchange.
+12. Historical and contemporary guest dialogue must be grounded ONLY in documented material attributable to that person: writings, speeches, interviews, letters, testimony, official records, public statements, or authorized autobiographical material.
+13. The Sim may paraphrase documented ideas for clarity and accessibility, but MUST NOT invent a guest's beliefs, motives, private thoughts, experiences, quotations, or positions that are not supported by the historical record.
+14. Never fabricate quotations. If exact wording is uncertain, paraphrase rather than quote.
+15. Guests should speak in a manner appropriate to their era and documented public voice without becoming caricatures or confusing students with unnecessarily archaic language.
+16. At the end of the Sim, Prof. Epps thanks the guests for participating and for sharing perspectives rooted in what they actually lived, wrote, said, or authorized.
+17. The closing should briefly remind students that the Sim dramatizes documented historical perspectives and is not inventing biography.
+"""
+
+SIM_INSTRUCTIONS = BASE_INSTRUCTIONS + "\n\n" + TEXTBOOK_KNOWLEDGE + "\n\n" + GUEST_PARTICIPATION_RULES
 
 
 def require_openai():
@@ -235,14 +258,17 @@ Name: {name}
 From: {origin or "not specified"}
 Crazy fun fact: {fact or "not specified"}
 
-Complete the social opening only.
+Complete the social opening and guest welcome, but do NOT begin the graded Congress discussion yet.
 - Prof. Epps reacts briefly and freshly to the student's fun fact.
 - Sophia, Ethan, Carlos, Aaliyah, and Freja each introduce themselves naturally.
 - Prof. Epps introduces himself last.
 - Natural interjections are welcome; do not make it feel like roll call.
-- Historical guests do NOT enter during this opening.
-- Do not begin the graded Congress discussion yet.
-- End at a natural point where {name} can respond again.
+- After those introductions, Prof. Epps formally welcomes the Chapter 2 special guests who will participate in this session.
+- Choose the guests from the Chapter 2 guest roster whose perspectives are most useful for the planned discussion. All five do not have to speak immediately.
+- One or two recurring students may make a brief, respectful modern reaction to the guests' period clothing or presence.
+- Each welcomed guest gives only a short introductory remark rooted in documented historical material.
+- Do not ask the first graded question yet.
+- End at a natural point where {name} can respond to the guest arrival/welcome if they wish.
 Set question_result to "not_started".
 '''
     try:
@@ -287,12 +313,13 @@ def api_reply():
 
     if not started:
         task_block = f'''
-The social opening is complete. {name}'s latest line is social conversation, NOT an answer to a graded question.
+The social opening and formal guest welcome are complete. {name}'s latest line is social conversation, NOT an answer to a graded question.
 Now transition naturally into the FIRST graded Congress discussion target.
 CURRENT HIDDEN TARGET: {current['target']}
 Appropriate historical guest options for this target:
 {current_guests}
-Introduce at most 1-2 guests now if their presence genuinely improves the exchange. A guest may simply join the conversation naturally; do not announce an internal rotation system.
+Use the already welcomed guest whose documented perspective best fits this target. If another guest becomes more relevant later, rotate naturally.
+The guest may comment briefly, question another participant, or directly ask {name} what they think. A guest who contributes substantively should usually bring {name} into the exchange with a direct, natural question tied to the topic.
 Ask the target in fresh conversational wording appropriate to an accessible opening. Do not reveal difficulty or question number.
 Set question_result to "in_progress".
 '''
@@ -310,7 +337,7 @@ Evaluate {name}'s latest response ONLY against the current target.
 - If the answer is thin but salvageable, set question_result="in_progress" and give one gentle, inviting push for a reason, example, distinction, consequence, or one more step of thought.
 - If {name} asks for clarification or says the question is not understood, set question_result="clarify". Rephrase the SAME target more simply and give only neutral context, not the answer.
 - If {name} explicitly says skip/pass/does not want to answer, set question_result="skipped". Accept immediately and without judgment. If another target remains, move naturally to it. Do not ask them to reconsider.
-- If this is the fourth target and it becomes answered or skipped, close with a concise synthesis and say the Chapter 2 Sim-Discussion is complete and {name} should return to Canvas.
+- If this is the fourth target and it becomes answered or skipped, close with a concise synthesis. Prof. Epps must thank the participating guests for sharing perspectives grounded in what they lived, wrote, said publicly, or authorized in autobiographical accounts; briefly remind the student that the guest dialogue is based on documented historical material; then clearly say the Chapter 2 Sim-Discussion is complete.
 '''
 
     user_input = f'''
@@ -320,7 +347,10 @@ The student's name is {name}.
 
 {task_block}
 
-Keep the room conversational. Prof. Epps does not automatically respond first. Historical guests, recurring classmates, and Prof. Epps may speak to each other. Usually give 2-4 short turns, then wait for {name}, except the final completion may close without another question.
+Keep the room conversational. Prof. Epps does not automatically respond first. Historical guests, recurring classmates, and Prof. Epps may speak to each other.
+When a historical guest contributes meaningfully, that guest should usually ask {name} a direct, natural question or respond to something {name} previously said and invite them back into the exchange.
+Do not force every guest into every topic and do not let guest-to-guest dialogue crowd out the real student.
+Usually give 2-4 short turns, then wait for {name}, except the final completion may close without another question.
 '''
 
     try:
