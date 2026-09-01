@@ -85,10 +85,23 @@ VOICE_PREVIEW_TEXT = {
 
 
 GUEST_PARTICIPATION_RULES = """
+MASTER CHAPTER OPENING ARCHITECTURE — LOCKED FOR ALL SIM CHAPTERS
+
+1. Complete the recurring-group introductions first.
+2. Pause for the real IVC student.
+3. Prof. Epps formally welcomes ALL chapter guests collectively before introducing any guest individually.
+4. Prof. Epps then welcomes each guest one at a time, addressing that guest directly as physically present in the room. Use "you/your," not third-person biography language.
+5. Guests respond briefly only after the complete welcome.
+6. Pause again for the real IVC student.
+7. Prof. Epps gives a short conversational chapter bridge explaining what the chapter is really about.
+8. Prof. Epps says something like "Maybe we start easy" and directs the first low-pressure opener to ANY recurring student, not automatically the real IVC student.
+9. That recurring student answers first; another classmate or guest may react; then the IVC student is invited into the conversation naturally.
+10. Only after that easy entry exchange should the Sim transition into hidden graded discussion targets.
+
 SPECIAL GUEST PARTICIPATION — LOCKED RULES FOR ALL GUESTS
 
 1. Guests are active discussants, not decorative cameos.
-2. After the core social welcome and introductions are complete, but BEFORE the first graded Chapter 2 question begins, Prof. Epps formally welcomes the Chapter 2 guests who will participate in that session.
+2. After the core social welcome and introductions are complete, but BEFORE the first graded Chapter 2 question begins, Prof. Epps formally welcomes the Chapter 2 guests.
 3. At that moment, the student-facing room should transition to the guest-inclusive Chapter 2 group image.
 4. One or two recurring classmates may react naturally to the guests' period clothing or presence using current student language when it fits the moment, for example "Okay, that outfit is fire" or "Cool threads." Keep this brief, natural, and never disrespectful.
 5. Each participating guest gives only a brief introduction or opening remark. Do not turn the guest welcome into a lecture or roll call.
@@ -251,26 +264,31 @@ def api_start():
     session["question_started"] = False
     session["question_results"] = []
     session["sim_complete"] = False
+    session["guest_welcome_complete"] = False
+    session["chapter_bridge_complete"] = False
 
-    user_input = f'''
+    user_input = f"""
 The real student has just entered the Chapter 2 discussion room and introduced themself:
 Name: {name}
 From: {origin or "not specified"}
 Crazy fun fact: {fact or "not specified"}
 
-Complete the social opening and guest welcome, but do NOT begin the graded Congress discussion yet.
+Complete ONLY the recurring-group social opening. Do NOT introduce any historical or special guests yet, and do NOT begin the Chapter 2 substantive discussion.
+
+REQUIRED OPENING:
 - Prof. Epps reacts briefly and freshly to the student's fun fact.
 - Sophia, Ethan, Carlos, Aaliyah, and Freja each introduce themselves naturally.
 - Prof. Epps introduces himself last.
-- Natural interjections are welcome; do not make it feel like roll call.
-- After those introductions, Prof. Epps formally welcomes the Chapter 2 special guests who will participate in this session.
-- Choose the guests from the Chapter 2 guest roster whose perspectives are most useful for the planned discussion. All five do not have to speak immediately.
-- One or two recurring students may make a brief, respectful modern reaction to the guests' period clothing or presence.
-- Each welcomed guest gives only a short introductory remark rooted in documented historical material.
-- Do not ask the first graded question yet.
-- End at a natural point where {name} can respond to the guest arrival/welcome if they wish.
+- Natural interjections, teasing, laughter, or quick follow-ups are welcome when they fit.
+- Do not make it feel like formal roll call.
+- Historical/special guests are NOT in the visible conversation yet.
+- Do not mention James Madison, Henry Clay, Lyndon B. Johnson, Shirley Chisholm, or John McCain.
+- Do not ask a Congress question yet.
+- End with a warm line that welcomes {name} into the group and leaves a natural pause for {name} to respond.
+
 Set question_result to "not_started".
-'''
+Set wait_for_student to true.
+"""
     try:
         response = client.responses.create(model=MODEL, instructions=SIM_INSTRUCTIONS, input=user_input)
         session["previous_response_id"] = response.id
@@ -296,6 +314,106 @@ def api_reply():
     if not previous_response_id:
         return jsonify({"error": "This discussion session has expired. Please restart the Sim from the beginning."}), 409
 
+    # STRUCTURAL PHASE 1: guaranteed Chapter 2 distinguished-guest welcome.
+    if not bool(session.get("guest_welcome_complete", False)):
+        guest_turns = [
+            {"speaker": "Prof. Epps", "text": "Before we turn to Congress itself, I want to take a moment to welcome five distinguished guests to our Chapter 2 discussion. It is a genuine privilege to have all of you here at the table with us. Between you, we have perspectives from the founding era, major nineteenth-century legislative battles, modern congressional leadership, the struggle for representation, and contemporary Senate life. We are honored to have each of you join us.", "action": "", "expression": "smile"},
+            {"speaker": "Prof. Epps", "text": "Mr. Madison, let me begin with you. Welcome. You helped design the constitutional structure that created Congress, and you wrote extensively about representation, factions, and balancing competing interests in a republic. Your perspective will give us a useful starting point for understanding why Congress was built the way it was.", "action": "", "expression": "smile"},
+            {"speaker": "Prof. Epps", "text": "Mr. Clay, I am very pleased to welcome you. Your long congressional career and reputation for legislative compromise placed you in the middle of some of the nineteenth century's hardest sectional conflicts. Your experience will help us think about bargaining, leadership, coalition-building, and what compromise can accomplish, or fail to accomplish.", "action": "", "expression": "smile"},
+            {"speaker": "Prof. Epps", "text": "President Johnson, welcome to our table. Before the White House, you were a formidable congressional leader, including service as Senate Majority Leader. Your experience with votes, persuasion, party leadership, and the legislative process gives us a very practical window into how Congress actually gets things done.", "action": "", "expression": "smile"},
+            {"speaker": "Prof. Epps", "text": "Congresswoman Chisholm, it is an honor to welcome you. You broke historic barriers as the first Black woman elected to Congress, and your public career raised fundamental questions about representation, voice, inclusion, and who gets to sit at the tables where national policy is made. Those questions belong at the center of this chapter.", "action": "", "expression": "smile"},
+            {"speaker": "Prof. Epps", "text": "Senator McCain, last but certainly not least, welcome. Your long Senate career included work across party lines as well as sharp partisan battles. Your experience gives us another perspective on deliberation, institutional norms, party pressure, compromise, and the tensions inside a modern Congress.", "action": "", "expression": "smile"},
+            {"speaker": "Prof. Epps", "text": "To all five of you, thank you for joining us. We are genuinely privileged to have your documented perspectives represented in this Chapter 2 discussion.", "action": "", "expression": "smile"},
+            {"speaker": "James Madison", "text": "Thank you, Professor Epps, for the generous welcome. Questions of representation and the proper structure of republican government are matters I am pleased to discuss.", "action": "", "expression": "smile"},
+            {"speaker": "Henry Clay", "text": "I am obliged to you for the welcome. Legislative government demands persuasion, judgment, and, at times, a willingness to find ground on which competing interests can act together.", "action": "", "expression": "smile"},
+            {"speaker": "Lyndon B. Johnson", "text": "Thank you, Professor. Congress can look awfully complicated from the outside, but sooner or later legislation comes down to people, votes, priorities, and whether you can build enough support to move something.", "action": "", "expression": "amused"},
+            {"speaker": "Shirley Chisholm", "text": "Thank you for the welcome. Representation matters not only because people deserve a voice, but because institutions make different decisions when more of the public is actually present in the room.", "action": "", "expression": "smile"},
+            {"speaker": "John McCain", "text": "Thank you, Professor Epps. I'm glad to join the discussion. Congress works best when strong disagreements do not eliminate the obligation to govern and to work with people you do not always agree with.", "action": "", "expression": "smile"},
+            {"speaker": "Ethan", "text": "Okay, this chapter just got a lot less theoretical. We have people here who actually lived the legislative process from very different angles.", "action": "", "expression": "amused"},
+            {"speaker": "Sophia", "text": f"{name}, what do you make of this guest list before we jump into Congress?", "action": "", "expression": "smile"},
+        ]
+
+        continuity_input = f"""
+A required visible Chapter 2 guest-welcome exchange has now occurred exactly as shown to the student:
+- Prof. Epps first welcomed James Madison, Henry Clay, Lyndon B. Johnson, Shirley Chisholm, and John McCain collectively as distinguished guests.
+- Prof. Epps then addressed and welcomed each guest directly and individually.
+- Each guest responded briefly.
+- Ethan reacted.
+- Sophia asked {name} what they make of having these guests at the table.
+
+Treat all five guests as physically present and available as active discussants from this point forward.
+Do not repeat the welcome.
+Do not begin the first substantive Congress question until after {name} responds and Prof. Epps gives a brief Chapter 2 bridge.
+"""
+        try:
+            response = client.responses.create(
+                model=MODEL,
+                instructions=SIM_INSTRUCTIONS,
+                previous_response_id=previous_response_id,
+                input=continuity_input,
+            )
+            session["previous_response_id"] = response.id
+        except Exception:
+            logger.exception("OpenAI continuity update after Chapter 2 guest welcome failed")
+
+        session["guest_welcome_complete"] = True
+        return jsonify({
+            "turns": guest_turns,
+            "wait_for_student": True,
+            "question_result": "not_started",
+            "complete": False,
+            "sim_complete": False,
+        })
+
+    # STRUCTURAL PHASE 2: short Chapter 2 bridge plus easy opener.
+    if not bool(session.get("chapter_bridge_complete", False)):
+        bridge_input = f"""
+The student's name is {name}.
+{name} just responded after the distinguished-guest welcome:
+{student_text}
+
+Now begin Chapter 2 with a SHORT conversational bridge followed by an easy opening question.
+
+PROF. EPPS' CHAPTER 2 BRIDGE:
+- Use roughly 3-5 spoken sentences.
+- Explain that Chapter 2 is about Congress as the national legislature: representation, the House and Senate, lawmaking, leadership, parties, committees, bargaining, and the tension between representing constituents and actually governing.
+- Mention that Congress can be frustrating and slow partly because the constitutional system was designed to make collective decisions difficult.
+- Keep it conversational. Do not sound like a textbook or mini-lecture.
+
+EASY OPENER:
+- Prof. Epps says something natural such as "Maybe we start easy."
+- Prof. Epps directs the first easy question to ANY ONE of Sophia, Ethan, Carlos, Aaliyah, or Freja. Do NOT automatically ask {name} first.
+- Use this question as the behavioral model:
+  "So, [student name], when you hear the word 'Congress,' what comes to mind? Lawmaking, people arguing, representing voters, budgets, gridlock, or something else?"
+- The exact wording may vary slightly, but preserve the low-pressure structure and examples.
+- The selected recurring student answers first in character.
+- One classmate or guest may react briefly if it feels natural.
+- Then invite {name} into the conversation naturally.
+- Do not reveal question numbers, difficulty, grading, or hidden targets.
+- End waiting for {name}.
+
+Set question_result to "not_started".
+Set wait_for_student to true.
+"""
+        try:
+            response = client.responses.create(
+                model=MODEL,
+                instructions=SIM_INSTRUCTIONS,
+                previous_response_id=session.get("previous_response_id"),
+                input=bridge_input,
+            )
+            session["previous_response_id"] = response.id
+            session["chapter_bridge_complete"] = True
+            payload = parse_sim_payload(response)
+            payload["question_result"] = "not_started"
+            payload["wait_for_student"] = True
+            payload["complete"] = False
+            payload["sim_complete"] = False
+            return jsonify(payload)
+        except Exception:
+            logger.exception("OpenAI Chapter 2 bridge request failed")
+            return jsonify({"error": "The room had trouble starting the Chapter 2 discussion just now. Your response is still here, so please press Continue again in a moment."}), 502
+
     plan, idx, current, nxt = current_question_state()
     if not current:
         # Defensive closure if the client somehow calls again after completion.
@@ -313,8 +431,9 @@ def api_reply():
 
     if not started:
         task_block = f'''
-The social opening and formal guest welcome are complete. {name}'s latest line is social conversation, NOT an answer to a graded question.
-Now transition naturally into the FIRST graded Congress discussion target.
+The social opening, distinguished-guest welcome, Chapter 2 bridge, and easy opening exchange are complete.
+{name}'s latest line is conversational context, NOT yet an answer to a hidden graded target unless it clearly and substantively addresses that target.
+Now transition naturally from what {name} just said into the FIRST hidden Congress discussion target.
 CURRENT HIDDEN TARGET: {current['target']}
 Appropriate historical guest options for this target:
 {current_guests}
