@@ -1534,9 +1534,12 @@ replyBox.addEventListener('keydown', (e)=>{
 });
 
 
-// Restore the visible transcript after an accidental refresh.
-// The server keeps the OpenAI conversation pointer in the signed session cookie.
-if(localStorage.getItem(simStateStorageKey) === '1'){
+// Restore only on an actual browser reload.
+// A fresh visit to the Sim must never resurrect a previous student's conversation.
+const navEntry = performance.getEntriesByType('navigation')[0];
+const isBrowserReload = !!navEntry && navEntry.type === 'reload';
+
+if(isBrowserReload && localStorage.getItem(simStateStorageKey) === '1'){
   const restored = loadSavedTranscript();
   if(restored){
     setupCard.classList.add('hidden');
@@ -1548,6 +1551,10 @@ if(localStorage.getItem(simStateStorageKey) === '1'){
       showCompletionWorkflow();
     }
   }
+}else{
+  // New visit, not a refresh: begin clean.
+  clearSavedTranscript();
+  transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
 }
 
 // ---------- Per-student transcript export ----------
