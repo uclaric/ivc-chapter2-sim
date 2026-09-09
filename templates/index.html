@@ -1,4 +1,4 @@
-<!doctype html>
+!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1096,6 +1096,69 @@ function addStudent(text, persist=true, shouldScroll=true){
 }
 
 
+
+// ---------- Chapter 3-style conversational cadence ----------
+function simPause(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function turnDelayMs(turn, index, previousTurn=null, batchHasGuests=false){
+  const speaker = String(turn?.speaker || '');
+  const text = String(turn?.text || '');
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+
+  // A visible pause after the real student's response keeps the room from
+  // answering before the student has had a moment to settle.
+  if(index === 0){
+    return batchHasGuests ? 6500 : 2500;
+  }
+
+  // Base conversational cadence: roughly 4.2–9 seconds depending on length.
+  let delay = 4200 + Math.min(4800, words * 85);
+
+  // Historical guests speak more deliberately.
+  if(chapter2GuestNames.has(speaker)){
+    delay = Math.max(delay, 5800);
+  }
+
+  // When the conversation crosses into a historical-guest turn, give the
+  // room a little extra breathing space for the panel transition.
+  const previousSpeaker = String(previousTurn?.speaker || '');
+  if(chapter2GuestNames.has(speaker) && !chapter2GuestNames.has(previousSpeaker)){
+    delay = Math.max(delay, 6500);
+  }
+
+  return Math.min(delay, 9000);
+}
+
+async function playTurnsSequentially(turns, openingSequence=false){
+  const list = Array.isArray(turns) ? turns : [];
+  if(!list.length) return;
+
+  const batchHasGuests = list.some(t =>
+    chapter2GuestNames.has(String(t?.speaker || '').trim())
+  );
+
+  for(let i=0; i<list.length; i++){
+    const t = list[i];
+
+    await simPause(
+      turnDelayMs(t, i, list[i - 1], batchHasGuests)
+    );
+
+    addTurn(
+      t.speaker,
+      t.text,
+      t.action || '',
+      true,
+      openingSequence
+        ? (normalizeExpression(t.expression) || 'amused')
+        : expressionForTurn(t),
+      true
+    );
+  }
+}
+
 function preliminaryAssessment(){
   try{return JSON.parse(localStorage.getItem(prelimAssessmentStorageKey) || 'null');}catch(_){return null;}
 }
@@ -1247,18 +1310,10 @@ document.getElementById('join').addEventListener('click', async ()=>{
     prefetchTurnAudio(data.turns||[]);
 
     // Opening/introduction sequence is intentionally warm and welcoming.
-    // Every core character uses the Amused/Friendly portrait here.
+    // Chapter 3 production cadence: turns appear one at a time instead of
+    // arriving in a visual pile.
     maybeSwitchToGuestRoom(data.turns||[]);
-    (data.turns||[]).forEach((t,index)=>
-      addTurn(
-        t.speaker,
-        t.text,
-        t.action||'',
-        true,
-        normalizeExpression(t.expression) || 'amused',
-        index === 0
-      )
-    );
+    await playTurnsSequentially(data.turns||[], true);
 
     if(!handleSimCompletion(data)) maybeShowFinalTranscript(data.turns||[]);
 
@@ -1296,16 +1351,8 @@ document.getElementById('send').addEventListener('click', async ()=>{
     maybeSwitchToGuestRoom(data.turns||[]);
     prefetchTurnAudio(data.turns||[]);
 
-    (data.turns||[]).forEach((t,index)=>
-      addTurn(
-        t.speaker,
-        t.text,
-        t.action||'',
-        true,
-        expressionForTurn(t),
-        index === 0
-      )
-    );
+    // Let the room answer sequentially, with the same cadence used in Chapter 3.
+    await playTurnsSequentially(data.turns||[], false);
 
     if(!handleSimCompletion(data)) maybeShowFinalTranscript(data.turns||[]);
     document.getElementById('replyStatus').textContent='';
@@ -1601,9 +1648,7 @@ instructorSkip.addEventListener('click', async ()=>{
   instructorSkip.textContent='🧪 Skipping...';
   try{
     const data=await postJSON('/api/instructor/skip',{token:instructorToken});
-    (data.turns||[]).forEach((t,index)=>
-      addTurn(t.speaker,t.text,t.action||'',true,expressionForTurn(t),index===0)
-    );
+    await playTurnsSequentially(data.turns||[], false);
     handleSimCompletion(data);
   }catch(e){
     document.getElementById('replyStatus').textContent=e.message || 'Instructor skip failed.';
