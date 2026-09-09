@@ -1,4 +1,4 @@
-!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1411,11 +1411,25 @@ function refreshSetupContinue(){
 setupContinue.disabled = true;
 setupReply.addEventListener('input', refreshSetupContinue);
 
-setupContinue.addEventListener('click',()=>{
+setupContinue.addEventListener('click', async ()=>{
   if(!setupReply.value.trim()){
     setupStatus.textContent='Give me a quick Howdy or Hola first. 🙂';
     return;
   }
+
+  // A completed setup check means the student is intentionally starting
+  // a fresh Sim run. Clear any prior browser transcript/state and reset
+  // the server-side session so an old conversation cannot bleed into
+  // the new opening.
+  clearSavedTranscript();
+  try{
+    await fetch('/api/reset', {method:'POST'});
+  }catch(_){
+    // If the reset request fails, local state is still cleared and the
+    // new /api/start call will create a fresh session.
+  }
+
+  transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
   setupCard.classList.add('hidden');
   introCard.classList.remove('hidden');
   document.getElementById('name').focus();
@@ -1525,6 +1539,7 @@ replyBox.addEventListener('keydown', (e)=>{
 if(localStorage.getItem(simStateStorageKey) === '1'){
   const restored = loadSavedTranscript();
   if(restored){
+    setupCard.classList.add('hidden');
     introCard.classList.add('hidden');
     replyCard.classList.remove('hidden');
     document.getElementById('replyStatus').textContent =
