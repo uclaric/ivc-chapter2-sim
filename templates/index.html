@@ -581,7 +581,7 @@ input:focus, textarea:focus,
 
     <section id="transcriptPanel" class="utility-panel hidden" aria-labelledby="transcriptPanelTitle">
       <h2 id="transcriptPanelTitle" style="margin:0 0 7px;color:#e1ba61;font-size:1.05rem">Your Sim Transcript</h2>
-      <p style="margin:0 0 10px;color:#eee4d0;font-size:.82rem">Your conversation is saved as you go. You can copy it here any time, and the final copy prompt will appear again when the Sim ends.</p>
+      <p style="margin:0 0 10px;color:#eee4d0;font-size:.82rem">Your conversation is saved as you go. You can copy it here any time, and the final submission prompt will appear again when the Sim ends.</p>
       <button type="button" id="copyTranscript" class="primary" style="width:auto;padding:10px 16px">📋 Copy Full Transcript</button>
       <div id="copyTranscriptStatus" class="status" aria-live="polite" style="margin-top:7px"></div>
     </section>
@@ -615,6 +615,9 @@ input:focus, textarea:focus,
     <div class="brand">
   <h1>SIM-DISCUSSION</h1>
   <p>American Government · Chapter 2</p>
+  <p style="margin:7px 0 0; color:#f7f1e7; font-family:'Inter',Arial,Helvetica,sans-serif; font-size:.92rem; line-height:1.35; font-weight:700;">
+    Congress and Representation: Who Speaks for Whom?
+  </p>
   <p style="margin:8px 0 0; color:#d7b05f; font-family:'Inter',Arial,Helvetica,sans-serif; font-size:.68rem; line-height:1.35;">
     &copy; 2026 Ric Epps. All Rights Reserved.
   </p>
@@ -692,21 +695,18 @@ input:focus, textarea:focus,
       </section>
 
       <section id="finalTranscriptCard" class="final-transcript-card hidden" aria-labelledby="finalTranscriptTitle">
-        <h2 id="finalTranscriptTitle">Your Chapter 2 Sim-Discussion is complete.</h2>
-        <p style="margin:0 0 8px;color:#eee4d0;font-size:.88rem;line-height:1.45">
-          Download your complete Submission Packet in the format you prefer. Then return to Canvas and upload the file to this assignment.
+        <h2 id="finalTranscriptTitle">Ready to submit your Chapter 2 Sim transcript?</h2>
+        <p style="margin:0 0 10px;color:#eee4d0;font-size:.86rem;line-height:1.45">
+          Copy the full transcript, return to the Canvas assignment, paste it into <strong>Text Entry</strong>, review it, and submit.
         </p>
-        <p style="margin:0;color:#d7b05f;font-size:.82rem;font-weight:700">Keep this Sim open until your file finishes downloading.</p>
 
         <div class="final-action-grid">
-          <button type="button" id="downloadDocx" class="download-action">⬇ Download DOCX</button>
-          <button type="button" id="downloadPdf" class="download-action">⬇ Download PDF</button>
-          <button type="button" id="finalCopyTranscript" class="copy-action">📋 Copy Transcript</button>
+          <button type="button" id="finalCopyTranscript" class="copy-action">📋 Copy Full Transcript</button>
           <a id="returnToCanvas" class="canvas-action" href="https://imperial.instructure.com/courses/32396/assignments">Return to Canvas Assignment</a>
         </div>
 
         <p class="final-export-note">
-          If a download is blocked, use <strong>Copy Transcript</strong> as a backup, paste it into Word or Google Docs, and save it as a PDF or DOCX before uploading to Canvas.
+          Keep this Sim open until you have pasted the transcript into Canvas successfully.
         </p>
         <div id="finalCopyTranscriptStatus" class="status" aria-live="polite"></div>
       </section>
@@ -733,8 +733,6 @@ const transcriptBtn=document.getElementById('transcriptBtn');
 const transcriptPanel=document.getElementById('transcriptPanel');
 const finalCopyTranscript=document.getElementById('finalCopyTranscript');
 const finalCopyTranscriptStatus=document.getElementById('finalCopyTranscriptStatus');
-const downloadDocx=document.getElementById('downloadDocx');
-const downloadPdf=document.getElementById('downloadPdf');
 const returnToCanvas=document.getElementById('returnToCanvas');
 const assessmentChoiceCard=document.getElementById('assessmentChoiceCard');
 const assessmentResultCard=document.getElementById('assessmentResultCard');
@@ -1567,7 +1565,7 @@ function buildTranscriptText(){
   const lines=[];
   lines.push('POLS C1000');
   lines.push('CHAPTER 2 SIM-DISCUSSION');
-  lines.push('Constitutional Foundations, Democracy, and Federalism');
+  lines.push('Congress and Representation: Who Speaks for Whom?');
   lines.push('');
   lines.push(`Student: ${meta.name || 'Student'}`);
   if(meta.session_id) lines.push(`Session ID: ${meta.session_id}`);
@@ -1606,7 +1604,7 @@ function buildTranscriptText(){
   }
   lines.push('');
   lines.push('--------------------------------------------------');
-  lines.push('End of Sim-Discussion Submission Packet');
+  lines.push('End of copied Sim transcript');
   return lines.join('\n');
 }
 
@@ -1680,66 +1678,11 @@ instructorSkip.addEventListener('click', async ()=>{
   }
 });
 
-async function downloadTranscript(format){
-  const button = format === 'pdf' ? downloadPdf : downloadDocx;
-  const originalLabel = button.textContent;
-  const meta = transcriptMeta();
-
-  button.disabled = true;
-  button.textContent = 'Preparing file...';
-  finalCopyTranscriptStatus.textContent = `Preparing your ${format.toUpperCase()} Submission Packet...`;
-
-  try{
-    const response = await fetch(`/api/export/${format}`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        transcript:buildTranscriptText(),
-        student_name:meta.name || 'Student'
-      })
-    });
-
-    if(!response.ok){
-      let message = `The ${format.toUpperCase()} file could not be created.`;
-      try{
-        const data = await response.json();
-        message = data.error || message;
-      }catch(_){}
-      throw new Error(message);
-    }
-
-    const blob = await response.blob();
-    const disposition = response.headers.get('Content-Disposition') || '';
-    const filenameMatch = disposition.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i);
-    const fallbackName = `Chapter_1_Sim_Discussion_${(meta.name || 'Student').replace(/[^A-Za-z0-9._-]+/g,'_')}.${format}`;
-    const filename = filenameMatch ? decodeURIComponent(filenameMatch[1].replace(/"/g,'')) : fallbackName;
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url), 1500);
-
-    finalCopyTranscriptStatus.textContent = `${format.toUpperCase()} downloaded. Now choose Return to Canvas Assignment and upload that file.`;
-  }catch(e){
-    finalCopyTranscriptStatus.textContent = `${e.message || 'Download failed.'} Use Copy Transcript as a backup.`;
-  }finally{
-    button.disabled = false;
-    button.textContent = originalLabel;
-  }
-}
-
-downloadDocx.addEventListener('click', ()=>downloadTranscript('docx'));
-downloadPdf.addEventListener('click', ()=>downloadTranscript('pdf'));
-
 copyTranscript.addEventListener('click', async ()=>{
   const text=buildTranscriptText();
   try{
     await navigator.clipboard.writeText(text);
-    copyTranscriptStatus.textContent='Full transcript copied. As a backup, paste it into Word or Google Docs and save it as a PDF or DOCX before uploading to Canvas.';
+    copyTranscriptStatus.textContent='Full transcript copied. Return to Canvas, paste it into Text Entry, review it, and submit.';
     finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
   }catch(_){
     const temp=document.createElement('textarea');
@@ -1751,7 +1694,7 @@ copyTranscript.addEventListener('click', async ()=>{
     temp.select();
     const ok=document.execCommand('copy');
     temp.remove();
-    copyTranscriptStatus.textContent=ok ? 'Full transcript copied. Paste it into Word or Google Docs and save it as a PDF or DOCX before uploading to Canvas.' : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
+    copyTranscriptStatus.textContent=ok ? 'Full transcript copied. Return to Canvas and paste it into Text Entry.' : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
     finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
   }
 });
