@@ -1,59 +1,131 @@
-<!doctype html>
+ <!doctype html>
+
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chapter 2 Sim-Discussion v5</title>
+
+<title>Chapter 2 Sim-Discussion</title>
+
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap');
+
 :root{
+
   --gold:#d7b05f;
+
   --cream:#f7f1e7;
+
   --red:#a6192e;
+
   --panel:#11100f;
+
   --muted:#c8c0b2;
+
   --field:#1b1815;
+
   --room-width:58%;
+
 }
+
 *{box-sizing:border-box}
+
 html,body{
+
   margin:0;
+
   width:100%;
+
   height:100%;
+
   overflow:hidden;
+
   background:#090807;
+
   color:var(--cream);
+
   font-family:'Inter',Arial,Helvetica,sans-serif
+
 }
+
 .app{
+
   width:100vw;
+
   height:100vh;
+
   display:flex;
+
   overflow:hidden;
+
   background:#090807
+
 }
+
 .room-wrap{
+
   flex:0 0 var(--room-width);
+
   min-width:42%;
+
   max-width:80%;
+
   height:100vh;
+
   position:relative;
+
   overflow:hidden;
+
   background:#0b0a09
+
 }
+
 .room{
+
   position:absolute;
+
   left:0;
+
   right:0;
-  top:126px;
-  bottom:0;
+
+  top:335px;
+
+  bottom:245px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  overflow:hidden;
+
+  background:#090807;
+
+}
+
+.group-image-frame{
+  width:calc(100% - 28px);
+  height:calc(100% - 20px);
+  margin:10px 14px;
+  padding:10px;
+  border:3px solid rgba(215,176,95,.78);
+  border-radius:18px;
+  background:rgba(20,16,12,.96);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.04),
+    0 10px 28px rgba(0,0,0,.38);
+  overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:hidden;
-  background:#090807;
 }
-.room img{
+
+.group-image-frame img{
   width:100%;
   height:100%;
   object-fit:contain;
@@ -61,1280 +133,2427 @@ html,body{
   transform-origin:center center;
   transition:transform .18s ease;
   display:block;
+  border-radius:12px;
 }
+
 .room-toolbar{
+
   position:absolute;
+
   left:auto;
+
   right:14px;
+
   bottom:14px;
+
   display:flex;
+
   gap:8px;
+
   z-index:4;
+
   background:rgba(10,9,8,.72);
+
   border:1px solid rgba(215,176,95,.38);
+
   border-radius:999px;
+
   padding:6px
+
 }
+
 .room-toolbar button{
+
   width:auto;
+
   margin:0;
+
   border:1px solid rgba(215,176,95,.45);
+
   border-radius:999px;
+
   background:#171411;
+
   color:var(--cream);
+
   padding:7px 10px;
+
   font-size:.82rem;
+
   font-weight:700;
+
   cursor:pointer
+
 }
+
 .room-toolbar button:hover{background:#211c17}
+
 .resize-hint{
+
   position:absolute;
-  top:90px;
+
+  top:auto;
+  bottom:66px;
+
   right:14px;
+
   background:rgba(10,9,8,.72);
+
   color:var(--cream);
+
   border:1px solid rgba(215,176,95,.38);
+
   border-radius:999px;
+
   padding:6px 10px;
+
   font-size:.76rem;
+
   z-index:4
+
 }
+
 .divider{
+
   flex:0 0 8px;
+
   width:8px;
+
   height:100vh;
+
   cursor:col-resize;
+
   background:linear-gradient(180deg,#b98e3e,#e0bf73,#b98e3e);
+
   position:relative;
+
   z-index:10
+
 }
+
 .divider::after{
+
   content:"";
+
   position:absolute;
+
   top:50%;
+
   left:50%;
+
   width:3px;
+
   height:54px;
+
   transform:translate(-50%,-50%);
+
   border-radius:999px;
+
   background:rgba(17,16,15,.68)
+
 }
+
 .panel{
+
   flex:1 1 auto;
+
   min-width:320px;
+
   height:100vh;
+
   background:var(--panel);
+
   display:flex;
+
   flex-direction:column;
+
   overflow:hidden
+
 }
+
 .brand{
+
   flex:0 0 auto;
+
   text-align:center;
+
   border-bottom:1px solid #6f5a31;
+
   padding:22px 24px 18px;
+
   background:#11100f
+
 }
+
 .brand h1{
+
   margin:0;
+
   color:#ffffff;
+
   font-family:'Montserrat','Inter',Arial,sans-serif;
+
   font-size:2.45rem;
+
   line-height:1.05;
+
   font-weight:800;
+
   letter-spacing:.025em
+
 }
+
 .brand p{
+
   font-family:'Inter',Arial,Helvetica,sans-serif;
+
   margin:.55rem 0 0;
+
   color:var(--gold);
+
   font-size:1.2rem;
+
   line-height:1.25;
+
   font-weight:700
+
 }
 
 .brand p:last-child{
+
   margin-top:.5rem !important;
+
   font-size:.76rem !important;
+
   line-height:1.3 !important;
+
   font-weight:600 !important;
+
 }
 
 .transcript{
+
   flex:1 1 auto;
+
   min-height:0;
+
   overflow-y:auto;
+
   overflow-x:hidden;
+
   padding:18px 22px 28px;
+
   scroll-behavior:smooth;
+
   scrollbar-width:thin;
+
   scrollbar-color:#6f5a31 #171411
+
 }
+
 .turn{margin:0 0 17px}
+
 .speaker{
+
   color:var(--gold);
-  font-weight:800;
+
+  font-weight: 700;
+
   margin-bottom:5px
+
 }
+
 .text{
+
+    font-size: 18px;
+
+    font-weight: 600;
+
   font:1.02rem/1.5 'Inter',Arial,Helvetica,sans-serif
+
 }
+
 .action{
+
   font-size:.82rem;
+
   color:var(--muted);
+
   font-style:italic;
+
   margin-top:4px
+
 }
+
 .student-turn{
+
   background:rgba(166,25,46,.14);
+
   border-left:4px solid var(--red);
+
   padding:10px 12px;
+
   border-radius:8px;
+
   font-weight:700
+
 }
+
 .composer{
+
   flex:0 0 auto;
+
   border-top:1px solid #6f5a31;
+
   background:#151311;
+
   padding:14px 18px 22px;
+
   box-shadow:0 -8px 18px rgba(0,0,0,.18)
+
 }
+
 .card{
+
   border:1px solid #79663f;
+
   border-radius:15px;
+
   padding:14px;
+
   background:#151311
+
 }
+
 label{
+
   display:block;
+
   color:var(--muted);
+
   font-size:.88rem;
+
   margin:10px 0 5px
+
 }
+
 input,textarea{
+
   width:100%;
+
   border:1px solid #796b55;
+
   border-radius:9px;
+
   background:var(--field);
+
   color:white;
+
   padding:11px;
+
   font-size:.98rem
+
 }
+
 textarea{
+
   min-height:86px;
+
   max-height:180px;
+
   resize:vertical
+
 }
+
 button.primary{
+
   width:100%;
+
   border:none;
+
   border-radius:999px;
+
   background:var(--gold);
+
   color:#17110b;
+
   font-weight:800;
+
   font-size:1rem;
+
   padding:12px;
+
   margin-top:13px;
+
   cursor:pointer
+
 }
+
 button.primary:disabled{opacity:.55;cursor:wait}
+
 .hidden{display:none!important}
+
 .status{
+
   font-size:.8rem;
+
   color:var(--muted);
+
   margin-top:9px;
+
   min-height:1.1em
+
 }
+
+
+.room-guide{
+  position:absolute;
+  left:18px;
+  right:18px;
+  top:78px;
+  z-index:4;
+  margin:0 auto;
+  max-width:820px;
+  background:rgba(17,16,15,.96);
+  border:2px solid rgba(215,176,95,.72);
+  border-radius:16px;
+  padding:16px 18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.30);
+  color:var(--cream);
+  backdrop-filter:blur(4px);
+}
+.room-guide h2{
+  margin:0 0 12px;
+  color:var(--gold);
+  font-family:'Montserrat','Inter',Arial,sans-serif;
+  font-size:1.45rem;
+  line-height:1.15;
+  font-weight:800;
+  text-align:center;
+  letter-spacing:.01em;
+}
+.room-guide-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 14px;
+}
+.room-guide-item{
+  background:#1b1815;
+  border:1px solid rgba(215,176,95,.32);
+  border-radius:10px;
+  padding:10px 12px;
+}
+.room-guide-item.submit{
+  grid-column:1 / -1;
+  background:#201b12;
+  border:2px solid rgba(215,176,95,.55);
+}
+.room-guide-item h3{
+  margin:0 0 4px;
+  color:#ffffff;
+  font-size:1.03rem;
+  line-height:1.2;
+  font-weight:800;
+}
+.room-guide-item p{
+  margin:0;
+  color:#f4ecdf;
+  font-size:.95rem;
+  line-height:1.38;
+  font-weight:650;
+}
+.room-guide-item strong{
+  color:#ffffff;
+  font-weight:800;
+}
+
+.submission-guide{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:16px;
+  z-index:4;
+  margin:0 auto;
+  max-width:820px;
+  background:rgba(17,16,15,.96);
+  border:2px solid rgba(215,176,95,.72);
+  border-radius:16px;
+  padding:14px 18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  color:var(--cream);
+}
+.submission-guide h2{
+  margin:0 0 9px;
+  color:var(--gold);
+  font-family:'Montserrat','Inter',Arial,sans-serif;
+  font-size:1.15rem;
+  line-height:1.2;
+  font-weight:800;
+}
+.submission-steps{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px 16px;
+}
+.submission-guide p{
+  margin:2px 0;
+  color:#f4ecdf;
+  font-size:.88rem;
+  line-height:1.3;
+  font-weight:650;
+}
+.submission-guide strong{
+  color:#ffffff;
+  font-weight:800;
+}
+
 @media(max-width:900px){
+
   html,body{overflow:auto}
+
   .app{
+
     width:100%;
+
     min-height:100vh;
+
     height:auto;
+
     flex-direction:column;
+
     overflow:visible
+
   }
+
   .room-wrap{
+
     flex:0 0 auto;
+
     width:100%;
+
     max-width:none;
+
     min-width:0;
+
     height:52vh
+
   }
+
   .divider{display:none}
+
   .panel{
+
     width:100%;
+
     min-width:0;
+
     height:70vh
+
   }
+
   .resize-hint{display:none}
+
 }
 
 .skip-link{
+
   position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden
+
 }
+
 .skip-link:focus{
+
   left:12px;top:12px;width:auto;height:auto;z-index:1000;
+
   background:#fff;color:#111;padding:10px 14px;border-radius:8px;font-weight:700
+
 }
+
 .sr-only{
+
   position:absolute!important;width:1px!important;height:1px!important;
+
   padding:0!important;margin:-1px!important;overflow:hidden!important;
+
   clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important
+
 }
+
 .access-toolbar{
+
   display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;
+
   border-bottom:1px solid #6f5a31;background:#151311
+
 }
+
 .access-toolbar button{
+
   border:1px solid rgba(215,176,95,.45);
+
   background:#171411;color:var(--cream);
+
   border-radius:999px;padding:8px 11px;
+
   font-size:.82rem;font-weight:700;cursor:pointer
+
 }
+
 .access-toolbar button[aria-pressed="true"]{
+
   background:var(--gold);color:#17110b
+
 }
+
 .access-toolbar button:focus,
+
 .room-toolbar button:focus,
+
 button.primary:focus,
+
 input:focus, textarea:focus,
+
 .divider:focus{
+
   outline:3px solid #ffffff;
+
   outline-offset:3px
+
 }
+
 .divider:focus{
+
   box-shadow:0 0 0 3px rgba(255,255,255,.85)
+
 }
+
+
+
 
 
 .voice-settings{
+
   flex:0 0 auto;
+
   margin:12px 16px 0;
+
   border:1px solid #79663f;
+
   border-radius:14px;
+
   background:#171411;
+
   padding:14px;
+
   max-height:44vh;
+
   overflow:auto
+
 }
+
 .voice-settings-head{
+
   display:flex;justify-content:space-between;gap:14px;align-items:flex-start;
+
   border-bottom:1px solid #5f4e30;padding-bottom:10px;margin-bottom:12px
+
 }
+
 .voice-settings-head h2{margin:0;color:var(--gold);font-size:1.05rem}
+
 .voice-settings-head p{margin:4px 0 0;color:var(--muted);font-size:.8rem}
+
 .voice-settings-head button{
+
   border:1px solid #79663f;background:#11100f;color:var(--cream);
+
   border-radius:999px;padding:5px 9px;cursor:pointer
+
 }
+
 .voice-grid{display:grid;grid-template-columns:1fr;gap:9px}
+
 .voice-row{
+
   display:grid;grid-template-columns:100px 1fr auto;gap:8px;align-items:center
+
 }
+
 .voice-row label{margin:0;color:var(--cream);font-weight:700}
+
 .voice-row select{
+
   width:100%;background:#1b1815;color:white;border:1px solid #796b55;
+
   border-radius:8px;padding:8px
+
 }
+
 .voice-row button{
+
   border:1px solid rgba(215,176,95,.5);background:#11100f;color:var(--cream);
+
   border-radius:999px;padding:7px 10px;cursor:pointer;white-space:nowrap
+
 }
+
 .voice-note{font-size:.76rem;color:var(--muted);margin-top:10px}
 
 
+
+
+
 .mic-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+
 .mic-button{background:#171512;color:#f6e8c1;border:1px solid #8f6c25;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+
 .mic-button[aria-pressed="true"]{outline:3px solid #d9b45d;outline-offset:2px}
+
 .mic-button:disabled{opacity:.55;cursor:not-allowed}
+
 .help-panel{border:1px solid #76591d;background:#151310;border-radius:14px;padding:16px;margin:0 18px 14px}
+
 .help-panel h2{margin:0 0 8px;color:#e1ba61;font-size:1.15rem}
+
 .help-panel p,.help-panel li{color:#eee4d0}
+
 .help-panel ul{margin:8px 0 0;padding-left:22px}
 
 .turn{
+
   margin:0 0 15px;
+
 }
+
 .turn .speaker{
+
   font-family:'Inter',Arial,Helvetica,sans-serif;
+
   font-weight:800;
+
   margin-bottom:6px
+
 }
+
 .turn .text{
+
   background:#24211e;
+
   border:1px solid rgba(255,255,255,.08);
+
   border-radius:10px;
+
   padding:10px 12px;
+
   font-family:'Inter',Arial,Helvetica,sans-serif;
+
   line-height:1.45
+
 }
+
 .turn[data-speaker="Sophia"] .speaker{color:#38a9ff}
+
 .turn[data-speaker="Ethan"] .speaker{color:#ff6b57}
+
 .turn[data-speaker="Carlos"] .speaker{color:#7fd36f}
+
 .turn[data-speaker="Aaliyah"] .speaker{color:#d88cff}
+
 .turn[data-speaker="Freja"] .speaker{color:#f0b86e}
+
 .turn[data-speaker="Prof. Epps"] .speaker,
+
 .turn[data-speaker="Professor Epps"] .speaker{color:var(--gold)}
+
 .student-turn{
+
   background:rgba(166,25,46,.14);
+
   border-left:4px solid var(--red);
+
   padding:10px 12px;
+
   border-radius:8px;
+
   font-weight:700
+
 }
+
 .room-side-toolbar{
+
   position:absolute;
+
   left:14px;
+
   right:14px;
+
   top:14px;
+
   z-index:5;
+
   display:flex;
+
   flex-direction:row;
+
   flex-wrap:wrap;
+
   justify-content:center;
+
   align-items:center;
+
   gap:12px;
+
   padding:10px 12px;
+
   background:rgba(10,9,8,.78);
+
   border:1px solid rgba(215,176,95,.38);
+
   border-radius:14px;
+
   backdrop-filter:blur(4px)
+
 }
+
 .room-side-toolbar button{
+
   width:auto;
+
   text-align:center;
+
   margin:0;
+
   border:1px solid rgba(215,176,95,.45);
+
   border-radius:999px;
+
   background:#171411;
+
   color:var(--cream);
+
   padding:10px 15px;
+
   font-size:.94rem;
+
   font-weight:700;
+
   cursor:pointer;
+
   white-space:nowrap
+
 }
+
 .room-side-toolbar button[aria-pressed="true"]{
+
   background:var(--gold);
+
   color:#17110b
+
 }
+
 .utility-panel{
+
   position:absolute;
+
   right:14px;
+
   left:auto;
+
   top:90px;
+
   z-index:6;
+
   width:min(360px,42%);
+
   max-height:70vh;
+
   overflow:auto;
+
   border:1px solid #76591d;
+
   background:#151310;
+
   border-radius:14px;
+
   padding:16px;
+
   box-shadow:0 10px 30px rgba(0,0,0,.35)
+
 }
+
 .final-transcript-card{
+
   margin-top:14px;
+
   border:1px solid #76591d;
+
   background:#151310;
+
   border-radius:14px;
+
   padding:14px 16px
+
 }
+
 .final-transcript-card h2{
+
   margin:0 0 7px;
+
   color:#e1ba61;
+
   font-family:'Montserrat','Inter',Arial,sans-serif;
+
   font-size:1.05rem
+
 }
 
-.assessment-card{
-  margin-top:14px;
-  border:1px solid #76591d;
-  background:#151310;
-  border-radius:14px;
-  padding:16px
-}
-.assessment-card h2{
-  margin:0 0 8px;
-  color:#e1ba61;
-  font-family:'Montserrat','Inter',Arial,sans-serif;
-  font-size:1.08rem
-}
-.assessment-choice-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:14px
-}
-.assessment-choice-row button{
-  margin:0
-}
-.assessment-result-level{
-  color:#ffffff;
-  font-weight:800;
-  font-size:1.05rem;
-  margin:8px 0
-}
-.assessment-result-list{
-  margin:10px 0 12px;
-  padding-left:22px;
-  color:#eee4d0
-}
-.assessment-result-list li{margin-bottom:7px}
-.instructor-test{
-  border-color:#8e69d8!important;
-  color:#eadfff!important
-}
-.instructor-test:hover{background:#281d38!important}
-@media(max-width:620px){
-  .assessment-choice-row{grid-template-columns:1fr}
-}
 
-.final-action-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin-top:12px
-}
-.final-action-grid button,
-.final-action-grid a{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:46px;
-  border-radius:10px;
-  padding:10px 12px;
-  font-size:.9rem;
-  font-weight:800;
-  text-align:center;
-  text-decoration:none;
-  cursor:pointer
-}
-.final-action-grid .download-action{
-  border:1px solid var(--gold);
-  background:var(--gold);
-  color:#17110b
-}
-.final-action-grid .copy-action{
-  border:1px solid #8f6c25;
-  background:#171512;
-  color:#f6e8c1
-}
-.final-action-grid .canvas-action{
-  grid-column:1 / -1;
-  border:2px solid #ffffff;
-  background:var(--red);
-  color:#ffffff
-}
-.final-action-grid button:disabled{opacity:.55;cursor:wait}
-.final-export-note{
-  margin:10px 0 0;
-  color:var(--muted);
-  font-size:.8rem;
-  line-height:1.4
-}
-@media(max-width:520px){
-  .final-action-grid{grid-template-columns:1fr}
-  .final-action-grid .canvas-action{grid-column:auto}
-}
+
 
 
 @media(max-width:900px){
+
+  .room-guide{display:none}
+  .submission-guide{
+    position:static;
+    margin:10px;
+    max-width:none;
+  }
+  .submission-steps{
+    grid-template-columns:1fr;
+  }
+
   .room{
+
     top:112px;
+
   }
+
   .room-side-toolbar{
+
     left:10px;
+
     right:10px;
+
     top:10px;
+
     justify-content:center;
+
   }
+
   .room-side-toolbar button{
+
     font-size:.82rem;
+
     padding:8px 11px;
+
   }
+
   .brand h1{font-size:2rem}
+
   .brand p{font-size:1.05rem}
+
+}
+
+
+/* ===== FINAL LEFT-PANEL STACKED LAYOUT =====
+   Keeps instructions, group image, and Canvas submission card
+   in normal vertical flow so nothing overlaps or creates a dead blank box. */
+.room-wrap{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  padding-bottom:0 !important;
+}
+
+.room-guide{
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  max-width:none !important;
+  margin:138px 18px 16px !important;
+}
+
+.room{
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:auto !important;
+  width:100% !important;
+  height:auto !important;
+  display:block !important;
+  overflow:visible !important;
+  background:#090807;
+}
+
+.group-image-frame{
+  width:calc(100% - 36px) !important;
+  height:auto !important;
+  margin:0 18px !important;
+  padding:10px !important;
+  border:3px solid rgba(215,176,95,.78) !important;
+  border-radius:18px !important;
+  background:rgba(20,16,12,.96) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.04),
+    0 10px 28px rgba(0,0,0,.38) !important;
+  overflow:hidden !important;
+  display:block !important;
+}
+
+.group-image-frame img{
+  width:100% !important;
+  height:auto !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  display:block !important;
+  border-radius:12px !important;
+}
+
+.submission-guide{
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  max-width:none !important;
+  margin:16px 18px 92px !important;
+}
+
+.room-toolbar{
+  position:sticky !important;
+  left:auto !important;
+  right:auto !important;
+  bottom:12px !important;
+  width:max-content !important;
+  margin:0 14px 12px auto !important;
+  z-index:10 !important;
+}
+
+.resize-hint{
+  position:sticky !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:70px !important;
+  width:max-content !important;
+  margin:0 14px 8px auto !important;
+  z-index:9 !important;
+}
+
+@media(max-width:900px){
+  .room-wrap{
+    overflow:visible !important;
+    height:auto !important;
+  }
+
+  .room-guide{
+    display:block !important;
+    margin:118px 10px 14px !important;
+  }
+
+  .room-guide-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .room{
+    position:relative !important;
+    top:auto !important;
+    bottom:auto !important;
+    height:auto !important;
+  }
+
+  .group-image-frame{
+    width:calc(100% - 20px) !important;
+    margin:0 10px !important;
+  }
+
+  .submission-guide{
+    position:relative !important;
+    margin:14px 10px 24px !important;
+  }
+
+  .submission-steps{
+    grid-template-columns:1fr !important;
+  }
+
+  .room-toolbar,
+  .resize-hint{
+    position:relative !important;
+    bottom:auto !important;
+  }
 }
 
 </style>
+
 </head>
+
 <body>
+
 <a class="skip-link" href="#reply">Skip to response box</a>
+
 <a class="skip-link" href="#transcript">Skip to conversation</a>
+
 <main class="app">
+
   <section class="room-wrap" id="roomWrap" aria-label="Chapter 2 discussion room visualization">
-    <div class="room" id="room"><img id="roomImage"
- src="/static/chapter2_room.png" alt="Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room."></div>
+
+    <section class="room-guide" id="roomGuide" aria-label="Sim controls quick guide">
+      <h2>HOW TO USE THE SIM</h2>
+
+      <div class="room-guide-grid">
+
+        <div class="room-guide-item">
+          <h3>🔊 LISTENING TO THE DISCUSSION</h3>
+          <p>Turn <strong>Character Audio ON</strong> if you want to hear the characters speak. Use <strong>Replay Last</strong> to hear the most recent speaker again. Use <strong>Pause Audio</strong> to stop the audio.</p>
+        </div>
+
+        <div class="room-guide-item">
+          <h3>🎧 FOLLOW THE CONVERSATION</h3>
+          <p>Each speaker appears automatically and the transcript scrolls with the conversation. With <strong>Character Audio ON</strong>, the next speaker appears when the current voice finishes. Use <strong>Play/Pause</strong>, <strong>−10 sec</strong>, <strong>+10 sec</strong>, or <strong>Replay Speaker</strong> whenever you need more control.</p>
+        </div>
+
+        <div class="room-guide-item">
+          <h3>⌨️ TYPE YOUR RESPONSE</h3>
+          <p>When the group asks you a question, type your answer in the <strong>response box</strong>. Select <strong>Continue</strong> or press <strong>Enter</strong> when ready. Use <strong>Shift + Enter</strong> for a new line.</p>
+        </div>
+
+        <div class="room-guide-item">
+          <h3>🎤 SPEAK YOUR RESPONSE</h3>
+          <p>Select <strong>Speak My Response</strong>, say your answer, then stop the recording. Your words will appear in the response box. <strong>Review and correct the transcription before sending it.</strong></p>
+        </div>
+
+
+      </div>
+    </section>
+
+    <div class="room" id="room">
+      <div class="group-image-frame">
+        <img id="roomImage"
+             src="/static/chapter3_team_room_APPROVED_20260907.png"
+             alt="Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room, welcoming the arriving student.">
+      </div>
+    </div>
+
+    <section class="submission-guide" aria-label="Canvas submission instructions">
+      <h2>📋 SUBMITTING YOUR WORK TO CANVAS</h2>
+      <div class="submission-steps">
+        <p><strong>1)</strong> Select <strong>Copy Full Transcript</strong>.</p>
+        <p><strong>2)</strong> Return to the <strong>Chapter 2 Sim-Discussion assignment in Canvas</strong>.</p>
+        <p><strong>3)</strong> Choose <strong>Text Entry</strong>.</p>
+        <p><strong>4)</strong> Paste the complete transcript into the Text Entry box.</p>
+        <p><strong>5)</strong> Review the pasted transcript.</p>
+        <p><strong>6)</strong> Select <strong>Submit Assignment</strong>.</p>
+        <p><strong>7)</strong> Confirm that Canvas shows the submission as successfully submitted.</p>
+      </div>
+    </section>
 
     <div class="access-toolbar room-side-toolbar" aria-label="Accessibility and audio controls">
+
       <button type="button" id="audioToggle" aria-pressed="false" aria-label="Turn character audio on">🔊 Audio: Off</button>
-      <button type="button" id="replayLast" aria-label="Replay the last spoken dialogue">↻ Replay last</button>
-      <button type="button" id="pauseAudio" aria-label="Pause or stop spoken dialogue">Ⅱ Pause audio</button>
+
+      <button type="button" id="rewindAudio" aria-label="Rewind current speaker 10 seconds">⏪ 10 sec</button>
+
+      <button type="button" id="playPauseAudio" aria-pressed="false" aria-label="Pause narration">⏸ Pause</button>
+
+      <button type="button" id="fastForwardAudio" aria-label="Fast forward current speaker 10 seconds">10 sec ⏩</button>
+
+      <button type="button" id="replayLast" aria-label="Replay the current or most recent speaker">↻ Replay Speaker</button>
+
       <button type="button" id="focusConversation" aria-pressed="false" aria-label="Enlarge the conversation panel">Focus dialogue</button>
+
       <button type="button" id="transcriptBtn" aria-expanded="false" aria-controls="transcriptPanel">📋 Transcript</button>
+
       <button type="button" id="helpBtn" aria-expanded="false" aria-controls="helpPanel">❓ Help</button>
-      <button type="button" id="instructorSkip" class="hidden instructor-test" aria-label="Instructor test mode: skip to completion">🧪 Skip to completion</button>
+
+      <button type="button" id="restartSim" aria-label="Restart the Sim from the beginning">↻ Restart Sim</button>
+
     </div>
 
     <section id="transcriptPanel" class="utility-panel hidden" aria-labelledby="transcriptPanelTitle">
+
       <h2 id="transcriptPanelTitle" style="margin:0 0 7px;color:#e1ba61;font-size:1.05rem">Your Sim Transcript</h2>
-      <p style="margin:0 0 10px;color:#eee4d0;font-size:.82rem">Your conversation is saved as you go. You can copy it here any time, and the final submission prompt will appear again when the Sim ends.</p>
+
+      <p style="margin:0 0 10px;color:#eee4d0;font-size:.82rem">Your conversation is saved as you go. You can copy it here any time, and the final copy prompt will appear again when the Sim ends.</p>
+
       <button type="button" id="copyTranscript" class="primary" style="width:auto;padding:10px 16px">📋 Copy Full Transcript</button>
+
       <div id="copyTranscriptStatus" class="status" aria-live="polite" style="margin-top:7px"></div>
+
     </section>
 
     <section id="helpPanel" class="utility-panel hidden" aria-labelledby="helpTitle">
+
       <h2 id="helpTitle">Sim Help</h2>
-      <p>This help is for operating the Sim. It does not provide answers to graded discussion questions.</p>
+
+      <p><strong>This help is for operating the Sim.</strong> It does not provide answers to graded discussion questions.</p>
+
       <ul>
+
         <li><strong>Microphone:</strong> choose Speak my response, allow microphone access, talk, then choose Stop &amp; transcribe.</li>
+
         <li><strong>Review first:</strong> your spoken words appear in the response box. Edit anything the transcription got wrong before sending.</li>
-        <li><strong>Audio:</strong> character audio can be turned off at any time. Written dialogue always remains available.</li>
+
+        <li><strong>Pacing:</strong> each speaker appears automatically. The transcript scrolls to the active speaker and stops when it is your turn to respond.</li>
+        <li><strong>Audio:</strong> turn Character Audio on or off at any time. Use Play/Pause, rewind 10 seconds, fast forward 10 seconds, or Replay Speaker. Written dialogue always remains available.</li>
+
         <li><strong>Connection:</strong> if a request fails, your typed response remains in the box so you can try again.</li>
+
         <li><strong>Refresh:</strong> the visible transcript is restored after an accidental refresh when the browser session is still available.</li>
+
       </ul>
+
     </section>
 
-     
-    
+
+
+
+
+
+
+
+
 <div class="resize-hint">Drag divider to resize</div>
+
     <div class="room-toolbar" aria-label="Room view controls">
+
       <button type="button" id="zoomOut" aria-label="Zoom room out">−</button>
+
       <button type="button" id="fitRoom">Fit full room</button>
+
       <button type="button" id="resetView">Reset view</button>
+
       <button type="button" id="zoomIn" aria-label="Zoom room in">+</button>
+
     </div>
+
   </section>
 
   <div class="divider" id="divider" tabindex="0" role="separator" aria-orientation="vertical" aria-label="Resize room and conversation" aria-valuemin="42" aria-valuemax="80" aria-valuenow="58" aria-valuetext="Room uses 58 percent of the window"></div>
 
   <aside class="panel">
+
     <div class="brand">
+
   <h1>SIM-DISCUSSION</h1>
+
   <p>American Government · Chapter 2</p>
+
   <p style="margin:7px 0 0; color:#f7f1e7; font-family:'Inter',Arial,Helvetica,sans-serif; font-size:.92rem; line-height:1.35; font-weight:700;">
-    Congress and Representation: Who Speaks for Whom?
-  </p>
+    Congress and Representation</p>
+
   <p style="margin:8px 0 0; color:#d7b05f; font-family:'Inter',Arial,Helvetica,sans-serif; font-size:.68rem; line-height:1.35;">
+
     &copy; 2026 Ric Epps. All Rights Reserved.
+
   </p>
+
 </div>
 
 
+
+
+
     <div id="transcript" class="transcript" role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false" tabindex="0">
+
       <h2 class="sr-only">Sim conversation</h2>
-      <div class="turn">
+
+      <div class="turn" data-speaker="Prof. Epps">
+
         <div class="speaker">Prof. Epps</div>
-        <div class="text">Hey everyone, welcome! Come on in and grab a seat. Before we get started, tell me a little about you! Please tell me your name, where you're from, and one fun fact about yourself. And...be sure to give me something better than ‘I like pizza.’ 😏</div>
+
+        <div class="text">Welcome, everyone, to our Chapter 2 discussion. And a special welcome to our IVC classmate joining us today. Before we get rolling, I&rsquo;d like you to introduce yourself to the group. After the quick setup check below, tell us your name, where you&rsquo;re from, and one fun fact about yourself.</div>
+
       </div>
+
     </div>
 
     <div class="composer">
+
       <div id="setupCard" class="intro-card">
-        <h2 style="margin-top:0;color:#e1ba61">Quick Setup Check 🎙️</h2>
-        <p>Before you grab a seat, type or say <strong>Howdy</strong> or <strong>Hola</strong>. That confirms your response controls are working.</p>
-        <textarea id="setupReply" placeholder='Type “Howdy” or “Hola”' aria-label="Quick setup response"></textarea>
+
+        <h2 style="margin-top:0;color:#e1ba61">Step 1 of 2: Quick Setup Check 🎙️</h2>
+
+        <p>Before you grab a seat, type or say <strong>Howdy</strong>, <strong>Hola</strong>, or <strong>Hi</strong>. That confirms your response controls are working.</p>
+
+        <textarea id="setupReply" placeholder='Type “Howdy”, “Hola”, or “Hi”' aria-label="Quick setup response"></textarea>
+
         <div class="mic-row">
-          <button type="button" class="mic-button" id="setupMicBtn" aria-pressed="false">🎤 Say Howdy or Hola</button>
+
+          <button type="button" class="mic-button" id="setupMicBtn" aria-pressed="false">🎤 Say Howdy, Hola, or Hi</button>
+
           <span id="setupStatus" class="status" aria-live="polite">Typing works too.</span>
+
         </div>
+
         <button class="primary" id="setupContinue">Continue</button>
+
       </div>
+
       <div id="introCard" class="card">
-        <label for="name">Your name</label>
-        <input id="name" placeholder="Type your name" aria-describedby="nameHelp">
-        <div id="nameHelp" class="sr-only">Enter the name you want everyone in the Sim to call you.</div>
-        <label for="origin">Where are you from?</label>
+        <h2 style="margin-top:0;color:#e1ba61">Step 2 of 2: Introduce Yourself</h2>
+        <p style="margin:0 0 10px;color:#eee4d0;font-size:.86rem">Before the discussion begins, tell the group your name, where you’re from, and one fun fact.</p>
+
+        <label for="name" style="font-weight:800; color:#ffffff;">Hi! What&rsquo;s your name?</label>
+
+        <input id="name" placeholder="First name or name you want us to use (example: Dal)" aria-describedby="nameHelp">
+
+        <div id="nameHelp" class="sr-only">Enter only the name you want everyone in the Sim to call you, not a full sentence.</div>
+
+        <label for="origin" style="font-weight:800; color:#ffffff;">Where are you from?</label>
+
         <input id="origin" placeholder="City, town, state, or country" aria-describedby="originHelp">
+
         <div id="originHelp" class="sr-only">Enter where you are from. You may give a city, town, state, or country.</div>
-        <label for="fact">One crazy fun fact about yourself</label>
+
+        <label for="fact" style="font-weight:800; color:#ffffff;">Tell us one crazy fun fact about yourself?</label>
+
         <textarea id="fact" placeholder="Give us something good" aria-describedby="factHelp"></textarea>
+
         <div id="factHelp" class="sr-only">Enter one unusual, funny, or interesting fact about yourself.</div>
+
         <button class="primary" id="join">LET’S PLAY!</button>
+
         <div id="introStatus" class="status"></div>
-      </div>
 
+      </div>
       <div id="replyCard" class="hidden">
+
         <textarea id="reply" placeholder="Type your response, or use the microphone..." aria-label="Your response to the Sim discussion"></textarea>
+
         <div class="mic-row">
+
           <button type="button" class="mic-button" id="micBtn" aria-pressed="false">🎤 Speak my response</button>
+
           <span id="micStatus" class="status" aria-live="polite">Your speech will be transcribed here for review before sending.</span>
+
         </div>
+
         <div class="status" style="margin-top:6px">Enter = Continue · Shift+Enter = New line · Spoken responses are never sent automatically.</div>
+
         <div id="replyStatus" class="status" style="margin:8px 0 4px; min-height:1.25em;"></div>
+
         <button class="primary" id="send">Continue</button>
+
       </div>
-
-      <section id="assessmentChoiceCard" class="assessment-card hidden" aria-labelledby="assessmentChoiceTitle">
-        <h2 id="assessmentChoiceTitle">Chapter 2 Sim-Discussion Complete ✅</h2>
-        <p style="margin:0 0 8px;color:#eee4d0;font-size:.88rem;line-height:1.45">
-          You have completed the required discussion. Would you like a brief preliminary assessment of how you did before you prepare your submission?
-        </p>
-        <p style="margin:0;color:#c8c0b2;font-size:.8rem;line-height:1.4">
-          This is optional and is not your course grade.
-        </p>
-        <div class="assessment-choice-row">
-          <button type="button" id="assessmentYes" class="primary">Yes — Show My Assessment</button>
-          <button type="button" id="assessmentNo" class="primary">No — Continue to Submission</button>
-        </div>
-        <div id="assessmentStatus" class="status" aria-live="polite"></div>
-      </section>
-
-      <section id="assessmentResultCard" class="assessment-card hidden" aria-labelledby="assessmentResultTitle">
-        <h2 id="assessmentResultTitle">Your Preliminary Learning Assessment</h2>
-        <div id="assessmentLevel" class="assessment-result-level"></div>
-        <p id="assessmentSummary" style="margin:0 0 8px;color:#eee4d0;font-size:.88rem;line-height:1.45"></p>
-        <ul id="assessmentPoints" class="assessment-result-list"></ul>
-        <p style="margin:8px 0 12px;color:#d7b05f;font-size:.8rem;line-height:1.4">
-          This is a preliminary learning assessment, not your course grade. Prof. Epps independently grades your complete Sim-Discussion using the course rubric.
-        </p>
-        <button type="button" id="assessmentContinue" class="primary">Continue to Submission</button>
-      </section>
 
       <section id="finalTranscriptCard" class="final-transcript-card hidden" aria-labelledby="finalTranscriptTitle">
-        <h2 id="finalTranscriptTitle">Ready to submit your Chapter 2 Sim transcript?</h2>
-        <p style="margin:0 0 10px;color:#eee4d0;font-size:.86rem;line-height:1.45">
-          Copy the full transcript, return to the Canvas assignment, paste it into <strong>Text Entry</strong>, review it, and submit.
-        </p>
 
-        <div class="final-action-grid">
-          <button type="button" id="finalCopyTranscript" class="copy-action">📋 Copy Full Transcript</button>
-          <a id="returnToCanvas" class="canvas-action" href="https://imperial.instructure.com/courses/32396/assignments">Return to Canvas Assignment</a>
-        </div>
+        <h2 id="finalTranscriptTitle">Ready to upload your Sim transcript to Canvas?</h2>
 
-        <p class="final-export-note">
-          Keep this Sim open until you have pasted the transcript into Canvas successfully.
-        </p>
+        <p style="margin:0 0 10px;color:#eee4d0;font-size:.86rem">Copy the full transcript, return to the Canvas assignment, paste it into Text Entry, review it, and submit.</p>
+
+        <button type="button" id="finalCopyTranscript" class="primary">📋 Copy Full Transcript</button>
+
         <div id="finalCopyTranscriptStatus" class="status" aria-live="polite"></div>
+
       </section>
+
           <div id="audioStatus" class="sr-only" aria-live="polite"></div>
+
     </div>
+
   </aside>
+
 </main>
 
 <script>
+
 const transcript = document.getElementById('transcript');
+
 const introCard = document.getElementById('introCard');
+
 const replyCard = document.getElementById('replyCard');
+
 const divider = document.getElementById('divider');
+
 const room = document.getElementById('room');
+
 const roomImage = document.getElementById('roomImage');
+
 const setupCard=document.getElementById('setupCard');
+
 const setupReply=document.getElementById('setupReply');
+
 const setupMicBtn=document.getElementById('setupMicBtn');
+
 const setupStatus=document.getElementById('setupStatus');
+
 const setupContinue=document.getElementById('setupContinue');
+
 const copyTranscript=document.getElementById('copyTranscript');
+
 const copyTranscriptStatus=document.getElementById('copyTranscriptStatus');
+
 const transcriptBtn=document.getElementById('transcriptBtn');
+
 const transcriptPanel=document.getElementById('transcriptPanel');
+
 const finalCopyTranscript=document.getElementById('finalCopyTranscript');
+
 const finalCopyTranscriptStatus=document.getElementById('finalCopyTranscriptStatus');
-const returnToCanvas=document.getElementById('returnToCanvas');
-const assessmentChoiceCard=document.getElementById('assessmentChoiceCard');
-const assessmentResultCard=document.getElementById('assessmentResultCard');
-const assessmentYes=document.getElementById('assessmentYes');
-const assessmentNo=document.getElementById('assessmentNo');
-const assessmentStatus=document.getElementById('assessmentStatus');
-const assessmentLevel=document.getElementById('assessmentLevel');
-const assessmentSummary=document.getElementById('assessmentSummary');
-const assessmentPoints=document.getElementById('assessmentPoints');
-const assessmentContinue=document.getElementById('assessmentContinue');
-const finalTranscriptCard=document.getElementById('finalTranscriptCard');
-const instructorSkip=document.getElementById('instructorSkip');
 
 introCard.classList.add('hidden');
 
-const CANVAS_COURSE_ASSIGNMENTS_URL='https://imperial.instructure.com/courses/32396/assignments';
-const canvasReferrer=(document.referrer || '').trim();
-if(canvasReferrer.includes('imperial.instructure.com/courses/32396/assignments/')){
-  returnToCanvas.href=canvasReferrer;
-}else{
-  returnToCanvas.href=CANVAS_COURSE_ASSIGNMENTS_URL;
-}
-
 const helpBtn = document.getElementById('helpBtn');
+
 const helpPanel = document.getElementById('helpPanel');
+
+const restartSim = document.getElementById('restartSim');
+
 const micBtn = document.getElementById('micBtn');
+
 const micStatus = document.getElementById('micStatus');
 
 let roomPct = 58;
+
 let zoom = 1;
+
 let dragging = false;
 
-const transcriptStorageKey = 'ivc_ch2_sim_transcript_v13';
-const regularRoomImage = '/static/chapter2_room.png';
-const guestRoomImage = '/static/chapter2_guests.png';
-const chapter2GuestNames = new Set([
-  'James Madison',
-  'Henry Clay',
-  'Lyndon B. Johnson',
-  'Shirley Chisholm',
-  'John McCain'
-]);
+const transcriptStorageKey = 'ivc_ch2_sim_transcript_v2';
 
-const simStateStorageKey = 'ivc_ch2_sim_started_v13';
-const simMetaStorageKey = 'ivc_ch2_sim_meta_v13';
-const prelimAssessmentStorageKey = 'ivc_ch2_preliminary_assessment_v1';
-const simCompletionStorageKey = 'ivc_ch2_sim_complete_v1';
+const simStateStorageKey = 'ivc_ch2_sim_started_v2';
 
+const simMetaStorageKey = 'ivc_ch2_sim_meta_v2';
+
+const browserRunKey = 'ivc_ch2_browser_run_v2';
+
+// A newly opened Sim tab belongs to a new student/run.
+
+// Refreshing the same tab keeps sessionStorage and can preserve progress.
+
+if(!sessionStorage.getItem(browserRunKey)){
+
+  [
+
+    'ivc_ch2_sim_transcript_v1','ivc_ch2_sim_started_v1','ivc_ch2_sim_meta_v1',
+
+    transcriptStorageKey, simStateStorageKey, simMetaStorageKey
+
+  ].forEach((key)=>localStorage.removeItem(key));
+
+  sessionStorage.setItem(browserRunKey, String(Date.now()));
+
+}
+
+if(restartSim){
+  restartSim.addEventListener('click', async ()=>{
+    const okay = window.confirm('Restart the Sim from the beginning? Your current on-screen Sim transcript will be cleared.');
+    if(!okay) return;
+
+    try{
+      stopCurrentTurnAudio();
+    }catch(_){}
+
+    try{
+      await fetch('/api/reset', {method:'POST'});
+    }catch(_){}
+
+    [
+      'ivc_ch2_sim_transcript_v1','ivc_ch2_sim_started_v1','ivc_ch2_sim_meta_v1',
+      transcriptStorageKey, simStateStorageKey, simMetaStorageKey
+    ].forEach((key)=>localStorage.removeItem(key));
+
+    sessionStorage.removeItem(browserRunKey);
+    window.location.reload();
+  });
+}
+
+const POST_SETUP_WELCOME = "Welcome, everyone, to our Chapter 2 discussion. And a special welcome to our IVC classmate joining us today. Before we get rolling, I’d like you to introduce yourself to the group. After the quick setup check below, tell us your name, where you’re from, and one fun fact about yourself.";
+
+let postSetupWelcomeShown = false;
+
+// Opening-sequence control.
+// Students may interrupt the welcome at any time. The current scripted sequence
+// pauses, the Sim responds directly, and then the remaining welcome turns resume.
+let openingSequenceActive = false;
+let openingSequencePaused = false;
+let openingSequenceRunnerActive = false;
+let openingPendingTurns = [];
+
+// Automatic narration pacing.
+// The active speaker stays in view while audio plays. If audio is off,
+// the Sim uses a comfortable reading delay. Play/Pause freezes progression.
+let narrationPaused = false;
+let activeAdvanceResolve = null;
+
+function updatePlayPauseButton(){
+  if(!playPauseAudio) return;
+  const paused = narrationPaused || (currentAudio && currentAudio.paused && !currentAudio.ended);
+  playPauseAudio.textContent = paused ? '▶ Play' : '⏸ Pause';
+  playPauseAudio.setAttribute('aria-pressed', paused ? 'true' : 'false');
+  playPauseAudio.setAttribute('aria-label', paused ? 'Resume narration' : 'Pause narration');
+}
+
+function finishActiveAdvance(){
+  if(activeAdvanceResolve){
+    const resolve = activeAdvanceResolve;
+    activeAdvanceResolve = null;
+    resolve();
+  }
+}
+
+function stopCurrentTurnAudio(resolveAdvance=false){
+  if(currentAudio){
+    try{ currentAudio.pause(); }catch(_){}
+    if(currentAudio._objectUrl){
+      try{ URL.revokeObjectURL(currentAudio._objectUrl); }catch(_){}
+    }
+    currentAudio = null;
+  }
+  audioPlaying = false;
+  if(resolveAdvance) finishActiveAdvance();
+  updatePlayPauseButton();
+}
+
+function interruptNarration(){
+  stopCurrentTurnAudio(true);
+}
+
+async function waitUntilNarrationResumed(){
+  while(narrationPaused){
+    await new Promise(resolve=>setTimeout(resolve,100));
+  }
+}
+
+const ROOM_PANELS = {
+  team: '/static/chapter2_room.png',
+  congress: '/static/chapter2_room.png'
+};
+
+let currentRoomPanel = 'team';
+
+function setRoomPanel(panel){
+
+  const next = ROOM_PANELS[panel] ? panel : 'team';
+
+  currentRoomPanel = next;
+
+  roomImage.onerror = () => {
+
+    roomImage.onerror = null;
+
+    roomImage.src = ROOM_PANELS.team;
+
+    roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room, welcoming the arriving student.';
+
+  };
+
+  roomImage.src = ROOM_PANELS[next];
+
+  if(next === 'team' || next === 'congress'){
+    roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered in the Chapter 2 Congress and Representation discussion room.';
+  }else if(next === 'presidents'){
+
+    roomImage.alt = 'Chapter 5 civil-rights discussion panel focused on race, equal protection, presidential responsibility, and federal enforcement.';
+
+  }else{
+
+    roomImage.alt = 'Chapter 5 social-movements discussion panel focused on Latino civil rights, women’s rights, disability rights, LGBTQ+ equality, and movement strategy.';
+
+  }
+
+  zoom = 1;
+
+  setZoom(1);
+
+}
 
 const characterExpressions = {
+
   'Prof. Epps': {
+
     neutral:'/static/expressions/prof_epps/neutral.png',
+
     amused:'/static/expressions/prof_epps/amused.png',
+
     skeptical:'/static/expressions/prof_epps/skeptical.png',
+
     thinking:'/static/expressions/prof_epps/thinking.png',
+
     surprised:'/static/expressions/prof_epps/surprised.png'
+
   },
+
   'Professor Epps': {
+
     neutral:'/static/expressions/prof_epps/neutral.png',
+
     amused:'/static/expressions/prof_epps/amused.png',
+
     skeptical:'/static/expressions/prof_epps/skeptical.png',
+
     thinking:'/static/expressions/prof_epps/thinking.png',
+
     surprised:'/static/expressions/prof_epps/surprised.png'
+
   },
+
   'Sophia': {
+
     neutral:'/static/expressions/sophia/neutral.png',
+
     amused:'/static/expressions/sophia/amused.png',
+
     skeptical:'/static/expressions/sophia/skeptical.png',
+
     thinking:'/static/expressions/sophia/thinking.png',
+
     surprised:'/static/expressions/sophia/surprised.png'
+
   },
+
   'Ethan': {
+
     neutral:'/static/expressions/ethan/neutral.png',
+
     amused:'/static/expressions/ethan/amused.png',
+
     skeptical:'/static/expressions/ethan/skeptical.png',
+
     thinking:'/static/expressions/ethan/thinking.png',
+
     surprised:'/static/expressions/ethan/surprised.png'
+
   },
+
   'Carlos': {
+
     neutral:'/static/expressions/carlos/neutral.png',
+
     amused:'/static/expressions/carlos/amused.png',
+
     skeptical:'/static/expressions/carlos/skeptical.png',
+
     thinking:'/static/expressions/carlos/thinking.png',
+
     surprised:'/static/expressions/carlos/surprised.png'
+
   },
+
   'Aaliyah': {
+
     neutral:'/static/expressions/aaliyah/neutral.png',
+
     amused:'/static/expressions/aaliyah/amused.png',
+
     skeptical:'/static/expressions/aaliyah/skeptical.png',
+
     thinking:'/static/expressions/aaliyah/thinking.png',
+
     surprised:'/static/expressions/aaliyah/surprised.png'
+
   },
+
   'Freja': {
+
     neutral:'/static/expressions/freja/neutral.png',
+
     amused:'/static/expressions/freja/amused.png',
+
     skeptical:'/static/expressions/freja/skeptical.png',
+
     thinking:'/static/expressions/freja/thinking.png',
+
     surprised:'/static/expressions/freja/surprised.png'
+
   },
-  'James Madison': {
-    neutral:'/static/expressions/guests/james_madison/neutral.png',
-    smile:'/static/expressions/guests/james_madison/smile.png',
-    amused:'/static/expressions/guests/james_madison/amused.png',
-    skeptical:'/static/expressions/guests/james_madison/skeptical.png',
-    thinking:'/static/expressions/guests/james_madison/thinking.png',
-    surprised:'/static/expressions/guests/james_madison/surprised.png'
-  },
-  'Henry Clay': {
-    neutral:'/static/expressions/guests/henry_clay/neutral.png',
-    smile:'/static/expressions/guests/henry_clay/smile.png',
-    amused:'/static/expressions/guests/henry_clay/amused.png',
-    skeptical:'/static/expressions/guests/henry_clay/skeptical.png',
-    thinking:'/static/expressions/guests/henry_clay/thinking.png',
-    surprised:'/static/expressions/guests/henry_clay/surprised.png'
-  },
-  'Lyndon B. Johnson': {
-    neutral:'/static/expressions/guests/lyndon_johnson/neutral.png',
-    smile:'/static/expressions/guests/lyndon_johnson/smile.png',
-    amused:'/static/expressions/guests/lyndon_johnson/amused.png',
-    skeptical:'/static/expressions/guests/lyndon_johnson/skeptical.png',
-    thinking:'/static/expressions/guests/lyndon_johnson/thinking.png',
-    surprised:'/static/expressions/guests/lyndon_johnson/surprised.png'
-  },
-  'Shirley Chisholm': {
-    neutral:'/static/expressions/guests/shirley_chisholm/neutral.png',
-    smile:'/static/expressions/guests/shirley_chisholm/smile.png',
-    amused:'/static/expressions/guests/shirley_chisholm/amused.png',
-    skeptical:'/static/expressions/guests/shirley_chisholm/skeptical.png',
-    thinking:'/static/expressions/guests/shirley_chisholm/thinking.png',
-    surprised:'/static/expressions/guests/shirley_chisholm/surprised.png'
-  },
-  'John McCain': {
-    neutral:'/static/expressions/guests/john_mccain/neutral.png',
-    smile:'/static/expressions/guests/john_mccain/smile.png',
-    amused:'/static/expressions/guests/john_mccain/amused.png',
-    skeptical:'/static/expressions/guests/john_mccain/skeptical.png',
-    thinking:'/static/expressions/guests/john_mccain/thinking.png',
-    surprised:'/static/expressions/guests/john_mccain/surprised.png'
-  }
+
+  'James Madison': {neutral:'/static/expressions/guests/james_madison/neutral.png', smile:'/static/expressions/guests/james_madison/smile.png', amused:'/static/expressions/guests/james_madison/amused.png', skeptical:'/static/expressions/guests/james_madison/skeptical.png', thinking:'/static/expressions/guests/james_madison/thinking.png', surprised:'/static/expressions/guests/james_madison/surprised.png'},
+
+  'Henry Clay': {neutral:'/static/expressions/guests/henry_clay/neutral.png', smile:'/static/expressions/guests/henry_clay/smile.png', amused:'/static/expressions/guests/henry_clay/amused.png', skeptical:'/static/expressions/guests/henry_clay/skeptical.png', thinking:'/static/expressions/guests/henry_clay/thinking.png', surprised:'/static/expressions/guests/henry_clay/surprised.png'},
+
+  'Lyndon B. Johnson': {neutral:'/static/expressions/guests/lyndon_johnson/neutral.png', smile:'/static/expressions/guests/lyndon_johnson/smile.png', amused:'/static/expressions/guests/lyndon_johnson/amused.png', skeptical:'/static/expressions/guests/lyndon_johnson/skeptical.png', thinking:'/static/expressions/guests/lyndon_johnson/thinking.png', surprised:'/static/expressions/guests/lyndon_johnson/surprised.png'},
+
+  'Shirley Chisholm': {neutral:'/static/expressions/guests/shirley_chisholm/neutral.png', smile:'/static/expressions/guests/shirley_chisholm/smile.png', amused:'/static/expressions/guests/shirley_chisholm/amused.png', skeptical:'/static/expressions/guests/shirley_chisholm/skeptical.png', thinking:'/static/expressions/guests/shirley_chisholm/thinking.png', surprised:'/static/expressions/guests/shirley_chisholm/surprised.png'},
+
+  'John McCain': {neutral:'/static/expressions/guests/john_mccain/neutral.png', smile:'/static/expressions/guests/john_mccain/smile.png', amused:'/static/expressions/guests/john_mccain/amused.png', skeptical:'/static/expressions/guests/john_mccain/skeptical.png', thinking:'/static/expressions/guests/john_mccain/thinking.png', surprised:'/static/expressions/guests/john_mccain/surprised.png'}
+
 };
 
 const allowedExpressions = new Set(['neutral','smile','amused','skeptical','thinking','surprised']);
 
 function normalizeExpression(value){
+
   const key = String(value || '').trim().toLowerCase();
+
   return allowedExpressions.has(key) ? key : '';
+
 }
 
 function inferExpression(text){
+
   const t = String(text || '').toLowerCase();
 
   if(/[!?]{2,}/.test(t) ||
+
      /\b(wow|whoa|seriously|really\?|no way|impressive|didn't expect|did not expect)\b/.test(t)){
+
     return 'surprised';
+
   }
 
   if(/\b(lol|haha|funny|good one|fair enough|nice|love that|that's great|that is great)\b/.test(t) ||
+
      /[😂🤣😄😁😉😏]/u.test(t)){
+
     return 'amused';
+
   }
 
   if(/\b(but|however|wait|why|how come|are you sure|i'm not convinced|i am not convinced|does that mean)\b/.test(t) ||
+
      /\?$/.test(t.trim())){
+
     return 'skeptical';
+
   }
 
   if(/\b(think|consider|reflect|maybe|perhaps|it depends|on the other hand|let me think|interesting point)\b/.test(t)){
+
     return 'thinking';
+
   }
 
   return 'neutral';
+
 }
 
 function expressionForTurn(turn){
+
   const explicit = normalizeExpression(turn && turn.expression);
+
   if(explicit) return explicit;
+
   return inferExpression(turn && turn.text);
+
 }
 
 function loadSavedTranscript(){
+
   try{
+
     const items = JSON.parse(localStorage.getItem(transcriptStorageKey) || '[]');
+
     if(!Array.isArray(items) || !items.length) return false;
+
     transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+
     items.forEach(item=>{
+
       if(item.type === 'student'){
+
         addStudent(item.text, false, false);
+
       }else if(item.type === 'sim'){
+
         addTurn(item.speaker, item.text, '', false, item.expression || '', false);
+
       }
+
     });
+
     return true;
+
   }catch(_){
+
     return false;
+
   }
+
 }
 
 function saveTranscriptItem(item){
+
   try{
+
     const items = JSON.parse(localStorage.getItem(transcriptStorageKey) || '[]');
+
     items.push(item);
+
     localStorage.setItem(transcriptStorageKey, JSON.stringify(items));
+
   }catch(_){}
+
 }
 
 function clearSavedTranscript(){
+
   try{
+
     localStorage.removeItem(transcriptStorageKey);
+
     localStorage.removeItem(simStateStorageKey);
-    if(roomImage){ roomImage.src = regularRoomImage; delete roomImage.dataset.guestRoomActive; }
+
     localStorage.removeItem(simMetaStorageKey);
-    localStorage.removeItem(prelimAssessmentStorageKey);
-    localStorage.removeItem(simCompletionStorageKey);
+
   }catch(_){}
+
 }
 
 function applyRoomWidth(){
+
   document.documentElement.style.setProperty('--room-width', roomPct + '%');
+
 }
+
 applyRoomWidth();
 
 divider.addEventListener('mousedown', ()=>{
+
   dragging = true;
+
   document.body.style.userSelect='none';
+
   document.body.style.cursor='col-resize';
+
 });
 
 window.addEventListener('mousemove', (e)=>{
+
   if(!dragging || window.innerWidth <= 900) return;
+
   const pct = (e.clientX / window.innerWidth) * 100;
+
   roomPct = Math.max(42, Math.min(80, pct));
+
   applyRoomWidth();
+
   updateDividerAria();
+
 });
 
 window.addEventListener('mouseup', ()=>{
+
   dragging = false;
+
   document.body.style.userSelect='';
+
   document.body.style.cursor='';
+
 });
 
 function setZoom(next){
+
   zoom = Math.max(.90, Math.min(1.25, next));
+
   roomImage.style.transform = `scale(${zoom})`;
+
 }
 
 document.getElementById('zoomIn').addEventListener('click', ()=>setZoom(zoom + .05));
 
 document.getElementById('fitRoom').addEventListener('click', ()=>{
+
   zoom = 1;
+
   setZoom(1);
+
 });
 
 document.getElementById('zoomOut').addEventListener('click', ()=>setZoom(zoom - .05));
+
 document.getElementById('resetView').addEventListener('click', ()=>{
+
   roomPct = 58;
+
   zoom = 1;
+
   applyRoomWidth();
+
   setZoom(1);
+
 });
 
-function maybeSwitchToGuestRoom(turns){
-  const list = Array.isArray(turns) ? turns : [];
-  const guestPresent = list.some(turn => chapter2GuestNames.has(String(turn?.speaker || '').trim()));
-  if(guestPresent && roomImage && !roomImage.dataset.guestRoomActive){
-    roomImage.src = guestRoomImage;
-    roomImage.dataset.guestRoomActive = 'true';
-    roomImage.alt = 'Prof. Epps, the recurring student group, and Chapter 2 historical guests gathered around the discussion table.';
-  }
-}
-
 function addTurn(speaker, text, action='', persist=true, expression='', shouldScroll=true){
+
   const wrap=document.createElement('div');
+
   wrap.className='turn';
+
   wrap.dataset.speaker=speaker;
 
   const row=document.createElement('div');
+
   row.style.display='flex';
+
   row.style.alignItems='flex-start';
+
   row.style.gap='12px';
 
   const resolvedExpression = normalizeExpression(expression) || inferExpression(text);
+
   const imagePath = characterExpressions[speaker]?.[resolvedExpression] ||
+
                     characterExpressions[speaker]?.neutral;
 
   if(imagePath){
+
     const portrait=document.createElement('img');
+
     portrait.src=imagePath;
+
+    portrait.onerror=()=>{
+
+      const fallbackPath = characterExpressions[speaker]?.neutral;
+
+      const fallbackUrl = fallbackPath ? new URL(fallbackPath, window.location.href).href : '';
+
+      if(fallbackUrl && portrait.src !== fallbackUrl){
+
+        portrait.onerror=()=>portrait.remove();
+
+        portrait.src=fallbackPath;
+
+      }else{
+
+        portrait.remove();
+
+      }
+
+    };
+
     portrait.alt=speaker + ' — ' + resolvedExpression + ' expression';
+
     portrait.dataset.expression=resolvedExpression;
+
     portrait.style.width='72px';
+
     portrait.style.height='72px';
+
     portrait.style.objectFit='cover';
+
     portrait.style.borderRadius='12px';
+
     portrait.style.flex='0 0 72px';
+
     portrait.style.boxShadow='0 3px 10px rgba(0,0,0,.35)';
+
     row.appendChild(portrait);
+
   }
 
   const content=document.createElement('div');
+
   content.style.flex='1';
+
   content.style.minWidth='0';
 
   const sp=document.createElement('div');
+
   sp.className='speaker';
+
   sp.textContent=speaker;
 
   const tx=document.createElement('div');
+
   tx.className='text';
+
   tx.textContent=text;
 
   content.appendChild(sp);
+
   content.appendChild(tx);
 
   if(action){
-    const ac=document.createElement('div');
-    ac.className='action';
-    ac.textContent=action;
-    content.appendChild(ac);
+
+    if(action.startsWith('switch_panel:')){
+
+      const panel = action.split(':',2)[1] || 'team';
+
+      setRoomPanel(panel);
+
+    }else{
+
+      const ac=document.createElement('div');
+
+      ac.className='action';
+
+      ac.textContent=action;
+
+      content.appendChild(ac);
+
+    }
+
   }
 
   row.appendChild(content);
+
   wrap.appendChild(row);
+
   transcript.appendChild(wrap);
 
   if(shouldScroll){
+
     requestAnimationFrame(()=>{
+
       const targetTop = Math.max(0, wrap.offsetTop - transcript.offsetTop - 8);
+
       transcript.scrollTo({top:targetTop, behavior:'smooth'});
+
     });
+
   }
 
   if(persist){
+
     saveTranscriptItem({
+
       type:'sim',
+
       speaker,
+
       text,
+
       expression:resolvedExpression
+
     });
+
   }
 
-  if(autoRead){ queueTurnAudio(speaker, text); }
+
 }
 
+function readingPause(text, isGuest=false){
+
+  const words = String(text || '')
+
+    .trim()
+
+    .split(/\s+/)
+
+    .filter(Boolean).length;
+
+  // Final Chapter 6 pacing:
+
+  // give each speaker enough room to be read comfortably
+
+  // before the next turn appears.
+
+  let pause = 3200 + (words * 105);
+
+  // Ordinary turns: roughly 4.2 to 9 seconds.
+
+  pause = Math.max(4200, Math.min(9000, pause));
+
+  // Historical/special guests receive a longer entrance/read beat.
+
+  if(isGuest){
+
+    pause = Math.max(pause, 5800);
+
+  }
+
+  return pause;
+
+}
+
+async function advanceAfterTurn(speaker, text, isGuest=false){
+  await waitUntilNarrationResumed();
+
+  if(autoRead){
+    await playTurnAudioAndWait(speaker, text);
+  }else{
+    await waitForReadableDelay(text, isGuest);
+  }
+}
+
+async function waitForReadableDelay(text, isGuest=false){
+  const total = readingPause(text, isGuest);
+  let elapsed = 0;
+  const step = 100;
+
+  return new Promise(resolve=>{
+    activeAdvanceResolve = resolve;
+
+    const tick = ()=>{
+      if(activeAdvanceResolve !== resolve) return;
+      if(!narrationPaused) elapsed += step;
+
+      if(elapsed >= total){
+        activeAdvanceResolve = null;
+        resolve();
+        return;
+      }
+      setTimeout(tick, step);
+    };
+
+    setTimeout(tick, step);
+  });
+}
+
+async function revealTurnsSequentially(turns, openingMode=false){
+  if(!Array.isArray(turns) || !turns.length) return;
+
+  const coreSpeakers = [
+    'Prof. Epps','Professor Epps','Sophia','Ethan','Carlos','Aaliyah','Freja'
+  ];
+
+  if(openingMode){
+    openingPendingTurns.push(...turns);
+    openingSequenceActive = true;
+
+    if(openingSequenceRunnerActive) return;
+    openingSequenceRunnerActive = true;
+
+    while(openingPendingTurns.length){
+      if(openingSequencePaused) break;
+
+      const t = openingPendingTurns.shift() || {};
+      const speaker = t.speaker || 'Prof. Epps';
+      const expr = normalizeExpression(t.expression) || 'smile';
+      const isGuest = !coreSpeakers.includes(speaker);
+
+      addTurn(
+        speaker,
+        t.text || '',
+        t.action || '',
+        true,
+        expr,
+        true
+      );
+
+      await advanceAfterTurn(speaker, t.text || '', isGuest);
+    }
+
+    openingSequenceRunnerActive = false;
+
+    if(!openingPendingTurns.length){
+      openingSequenceActive = false;
+      openingSequencePaused = false;
+    }
+    return;
+  }
+
+  for(let i = 0; i < turns.length; i++){
+    const t = turns[i] || {};
+    const speaker = t.speaker || 'Prof. Epps';
+    const expr = expressionForTurn(t);
+    const isGuest = !coreSpeakers.includes(speaker);
+
+    addTurn(
+      speaker,
+      t.text || '',
+      t.action || '',
+      true,
+      expr,
+      true
+    );
+
+    await advanceAfterTurn(speaker, t.text || '', isGuest);
+  }
+}
+
+async function resumeOpeningSequence(){
+  if(!openingSequenceActive || openingSequencePaused || openingSequenceRunnerActive) return;
+
+  if(!openingPendingTurns.length){
+    openingSequenceActive = false;
+    return;
+  }
+
+  const coreSpeakers = [
+    'Prof. Epps','Professor Epps','Sophia','Ethan','Carlos','Aaliyah','Freja'
+  ];
+
+  openingSequenceRunnerActive = true;
+
+  while(openingPendingTurns.length){
+    if(openingSequencePaused) break;
+
+    const t = openingPendingTurns.shift() || {};
+    const speaker = t.speaker || 'Prof. Epps';
+    const expr = normalizeExpression(t.expression) || 'smile';
+    const isGuest = !coreSpeakers.includes(speaker);
+
+    addTurn(
+      speaker,
+      t.text || '',
+      t.action || '',
+      true,
+      expr,
+      true
+    );
+
+    await advanceAfterTurn(speaker, t.text || '', isGuest);
+  }
+
+  openingSequenceRunnerActive = false;
+
+  if(!openingPendingTurns.length){
+    openingSequenceActive = false;
+    openingSequencePaused = false;
+  }
+}
+
+
 function addStudent(text, persist=true, shouldScroll=true){
+
   const wrap=document.createElement('div');
+
   wrap.className='turn student-turn';
+
   wrap.textContent=text;
+
   transcript.appendChild(wrap);
 
   if(shouldScroll){
+
     requestAnimationFrame(()=>{
+
       const targetTop = Math.max(0, wrap.offsetTop - transcript.offsetTop - 8);
+
       transcript.scrollTo({top:targetTop, behavior:'smooth'});
+
     });
+
   }
 
   if(persist){ saveTranscriptItem({type:'student', text}); }
+
 }
 
 
 
-// ---------- Chapter 3-style conversational cadence ----------
-function simPause(ms){
-  return new Promise(resolve => setTimeout(resolve, ms));
+
+
+
+
+function showFinalTranscriptCard(){
+  const card = document.getElementById('finalTranscriptCard');
+  if(card) card.classList.remove('hidden');
+  if(replyCard) replyCard.classList.add('hidden');
+  requestAnimationFrame(()=>{
+    if(card) card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
 }
 
-function turnDelayMs(turn, index, previousTurn=null, batchHasGuests=false){
-  const speaker = String(turn?.speaker || '');
-  const text = String(turn?.text || '');
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
+function maybeShowFinalTranscript(dataOrTurns){
+  const data = (!Array.isArray(dataOrTurns) && dataOrTurns) ? dataOrTurns : null;
+  const turns = Array.isArray(dataOrTurns)
+    ? dataOrTurns
+    : (Array.isArray(data?.turns) ? data.turns : []);
 
-  // A visible pause after the real student's response keeps the room from
-  // answering before the student has had a moment to settle.
-  if(index === 0){
-    return batchHasGuests ? 6500 : 2500;
+  if(data && (data.sim_complete === true || data.complete === true)){
+    showFinalTranscriptCard();
+    return true;
   }
 
-  // Base conversational cadence: roughly 4.2–9 seconds depending on length.
-  let delay = 4200 + Math.min(4800, words * 85);
+  const combined = turns
+    .map(t => String(t && t.text || ''))
+    .join(' ')
+    .toLowerCase();
 
-  // Historical guests speak more deliberately.
-  if(chapter2GuestNames.has(speaker)){
-    delay = Math.max(delay, 5800);
-  }
+  if(!combined) return false;
 
-  // When the conversation crosses into a historical-guest turn, give the
-  // room a little extra breathing space for the panel transition.
-  const previousSpeaker = String(previousTurn?.speaker || '');
-  if(chapter2GuestNames.has(speaker) && !chapter2GuestNames.has(previousSpeaker)){
-    delay = Math.max(delay, 6500);
-  }
-
-  return Math.min(delay, 9000);
-}
-
-async function playTurnsSequentially(turns, openingSequence=false){
-  const list = Array.isArray(turns) ? turns : [];
-  if(!list.length) return;
-
-  const batchHasGuests = list.some(t =>
-    chapter2GuestNames.has(String(t?.speaker || '').trim())
-  );
-
-  for(let i=0; i<list.length; i++){
-    const t = list[i];
-
-    await simPause(
-      turnDelayMs(t, i, list[i - 1], batchHasGuests)
-    );
-
-    addTurn(
-      t.speaker,
-      t.text,
-      t.action || '',
-      true,
-      openingSequence
-        ? (normalizeExpression(t.expression) || 'amused')
-        : expressionForTurn(t),
-      true
-    );
-  }
-}
-
-function preliminaryAssessment(){
-  try{return JSON.parse(localStorage.getItem(prelimAssessmentStorageKey) || 'null');}catch(_){return null;}
-}
-
-function savePreliminaryAssessment(value){
-  try{localStorage.setItem(prelimAssessmentStorageKey, JSON.stringify(value));}catch(_){}
-}
-
-function showSubmissionCard(){
-  assessmentChoiceCard.classList.add('hidden');
-  assessmentResultCard.classList.add('hidden');
-  finalTranscriptCard.classList.remove('hidden');
-  replyCard.classList.add('hidden');
-  requestAnimationFrame(()=>finalTranscriptCard.scrollIntoView({behavior:'smooth', block:'nearest'}));
-}
-
-function showCompletionWorkflow(){
-  try{localStorage.setItem(simCompletionStorageKey, '1');}catch(_){}
-  replyCard.classList.add('hidden');
-  finalTranscriptCard.classList.add('hidden');
-
-  const existing=preliminaryAssessment();
-  if(existing){
-    if(existing.declined){
-      showSubmissionCard();
-    }else{
-      renderAssessment(existing);
-      assessmentChoiceCard.classList.add('hidden');
-      assessmentResultCard.classList.remove('hidden');
-    }
-  }else{
-    assessmentResultCard.classList.add('hidden');
-    assessmentChoiceCard.classList.remove('hidden');
-    requestAnimationFrame(()=>assessmentChoiceCard.scrollIntoView({behavior:'smooth', block:'nearest'}));
-  }
-}
-
-function maybeShowFinalTranscript(turns){
-  if(!Array.isArray(turns)) return;
-  const combined=turns.map(t=>String(t && t.text || '')).join(' ').toLowerCase();
-  if(!combined) return;
-
-  const completionSignals=[
+  const completionSignals = [
     'ready to upload your sim transcript',
+    'ready to submit your sim transcript',
     'wraps up this sim-discussion',
     'wraps up this sim discussion',
     'sim-discussion is complete',
     'sim discussion is complete',
     'discussion is complete',
-    'return to canvas'
+    'return to canvas',
+    'head back to canvas',
+    'that completes your chapter 2 sim-discussion',
+    'that completes your chapter 2 sim discussion'
   ];
 
-  if(completionSignals.some(signal=>combined.includes(signal))){
-    showCompletionWorkflow();
-  }
-}
-
-function handleSimCompletion(data){
-  if(data && data.sim_complete){
-    showCompletionWorkflow();
+  if(completionSignals.some(signal => combined.includes(signal))){
+    showFinalTranscriptCard();
     return true;
   }
+
   return false;
 }
 
 async function postJSON(url, body){
+
   const r=await fetch(url,{
+
     method:'POST',
+
     headers:{'Content-Type':'application/json'},
+
     body:JSON.stringify(body)
+
   });
+
   const data=await r.json();
+
   if(!r.ok) throw new Error(data.error || 'Something went wrong');
+
   return data;
+
 }
 
 document.getElementById('name').addEventListener('keydown',(e)=>{
+
   if(e.key==='Enter'){
+
     e.preventDefault();
+
     document.getElementById('origin').focus();
+
   }
+
 });
+
 document.getElementById('origin').addEventListener('keydown',(e)=>{
+
   if(e.key==='Enter'){
+
     e.preventDefault();
+
     document.getElementById('fact').focus();
+
   }
+
 });
+
 document.getElementById('fact').addEventListener('keydown',(e)=>{
+
   if(e.key==='Enter' && !e.shiftKey){
+
     e.preventDefault();
+
     document.getElementById('join').click();
+
   }
+
 });
 
 let introSubmitted = false;
 
 document.getElementById('join').addEventListener('click', async ()=>{
+
   if(introSubmitted) return;
 
   const btn=document.getElementById('join');
+
   const name=document.getElementById('name').value.trim();
+
   const origin=document.getElementById('origin').value.trim();
+
   const fact=document.getElementById('fact').value.trim();
 
   if(!name){
+
     document.getElementById('name').focus();
+
     return;
+
   }
 
   introSubmitted = true;
+
   btn.disabled = true;
 
-  // Immediately move the student's typed introduction into the live dialogue.
+  // Move the student's typed introduction into the live dialogue.
+
+  // Keep the post-setup Prof. Epps welcome already on screen.
+
   clearSavedTranscript();
-  transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+
+  if(!postSetupWelcomeShown){
+
+    transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+
+    addTurn('Prof. Epps', POST_SETUP_WELCOME, '', true, 'smile', true);
+
+    postSetupWelcomeShown = true;
+
+  }
 
   addStudent(`${name}: ${origin?`I'm from ${origin}. `:''}${fact?`Fun fact: ${fact}`:''}`);
 
   localStorage.setItem(simMetaStorageKey, JSON.stringify({
+
     name,
+
     origin,
+
     fact,
+
     session_id:'',
+
     started_at:new Date().toISOString()
+
   }));
 
   // Clear and hide the introduction form immediately.
+
   document.getElementById('name').value='';
+
   document.getElementById('origin').value='';
+
   document.getElementById('fact').value='';
+
   introCard.classList.add('hidden');
+
   replyCard.classList.remove('hidden');
+
   document.getElementById('reply').focus({preventScroll:true});
+
   document.getElementById('replyStatus').textContent='The room is responding...';
 
   try{
+
     const data=await postJSON('/api/start',{name,origin,fact});
 
+    setRoomPanel(data.panel || 'team');
+
     localStorage.setItem(simMetaStorageKey, JSON.stringify({
+
       name,
+
       origin,
+
       fact,
+
       session_id:data.session_id||'',
+
       started_at:new Date().toISOString()
+
     }));
 
-    maybeSwitchToGuestRoom(data.turns||[]);
     prefetchTurnAudio(data.turns||[]);
 
-    // Opening/introduction sequence is intentionally warm and welcoming.
-    // Chapter 3 production cadence: turns appear one at a time instead of
-    // arriving in a visual pile.
-    maybeSwitchToGuestRoom(data.turns||[]);
-    await playTurnsSequentially(data.turns||[], true);
+    // Reveal the opening one person at a time so it feels like a live welcome.
 
-    if(!handleSimCompletion(data)) maybeShowFinalTranscript(data.turns||[]);
+    await revealTurnsSequentially(data.turns||[], true);
+
+    maybeShowFinalTranscript(data);
 
     localStorage.setItem(simStateStorageKey, '1');
+
     document.getElementById('replyStatus').textContent='';
 
-    if(autoRead){
-      queueTurnAudio('Prof. Epps', FIRST_AUDIO_BRIDGE);
-    }
   }catch(e){
+
     // Keep the student's introduction visible and keep the response box open.
+
     // Do not add another copy of the intro.
+
     document.getElementById('replyStatus').textContent =
+
       e.message || 'Your introduction was added, but the Sim server is not connected to OpenAI yet. Reconnect the server, then continue.';
+
   }finally{
+
     btn.disabled=false;
+
   }
+
 });
 
 document.getElementById('send').addEventListener('click', async ()=>{
   const btn=document.getElementById('send');
   const box=document.getElementById('reply');
   const text=box.value.trim();
+
   if(!text) return;
 
   btn.disabled=true;
@@ -1344,18 +2563,35 @@ document.getElementById('send').addEventListener('click', async ()=>{
     addStudent(text);
     box.value='';
 
+    // If the student speaks during the scripted welcome, pause it immediately.
+    // Respond to the student's actual comment, then resume the remaining welcome.
+    if(openingSequenceActive){
+      openingSequencePaused = true;
+      interruptNarration();
+
+      const data = await postJSON('/api/interject', {text});
+
+      prefetchTurnAudio(data.turns||[]);
+      await revealTurnsSequentially(data.turns||[], false);
+
+      document.getElementById('replyStatus').textContent='';
+
+      openingSequencePaused = false;
+      resumeOpeningSequence();
+      return;
+    }
 
     const data=await postJSON('/api/reply',{text});
-    maybeSwitchToGuestRoom(data.turns||[]);
+    setRoomPanel(data.panel || currentRoomPanel);
     prefetchTurnAudio(data.turns||[]);
-
-    // Let the room answer sequentially, with the same cadence used in Chapter 3.
-    await playTurnsSequentially(data.turns||[], false);
-
-    if(!handleSimCompletion(data)) maybeShowFinalTranscript(data.turns||[]);
+    await revealTurnsSequentially(data.turns||[], false);
+    maybeShowFinalTranscript(data);
     document.getElementById('replyStatus').textContent='';
+
   }catch(e){
     document.getElementById('replyStatus').textContent=e.message;
+    openingSequencePaused = false;
+    if(openingSequenceActive) resumeOpeningSequence();
   }finally{
     btn.disabled=false;
   }
@@ -1364,200 +2600,369 @@ document.getElementById('send').addEventListener('click', async ()=>{
 const replyBox = document.getElementById('reply');
 
 
-// ---------- Howdy / Hola quick setup ----------
+
+
+
+// ---------- Howdy / Hola / Hi quick setup ----------
+
 let setupRecorder=null, setupStream=null, setupChunks=[];
+
 async function startSetupRecording(){
+
   try{
+
     setupStream=await navigator.mediaDevices.getUserMedia({audio:true});
+
     setupChunks=[];
+
     const mimeType=supportedRecordingMime();
+
     setupRecorder=mimeType?new MediaRecorder(setupStream,{mimeType}):new MediaRecorder(setupStream);
+
     setupRecorder.addEventListener('dataavailable',e=>{if(e.data&&e.data.size)setupChunks.push(e.data);});
+
     setupRecorder.addEventListener('stop',async()=>{
+
       const actualType=setupRecorder.mimeType||mimeType||'audio/webm';
+
       const blob=new Blob(setupChunks,{type:actualType});
+
       setupStream.getTracks().forEach(t=>t.stop());
+
       setupStatus.textContent='Transcribing…';
+
       try{
+
         const form=new FormData();
+
         const ext=actualType.includes('mp4')?'mp4':actualType.includes('ogg')?'ogg':'webm';
+
         form.append('audio',blob,`setup.${ext}`);
+
         const r=await fetch('/api/transcribe',{method:'POST',body:form});
+
         const data=await r.json();
+
         if(!r.ok)throw new Error(data.error||'Transcription failed.');
+
         setupReply.value=data.text;
+
         refreshSetupContinue();
+
         setupStatus.textContent='Got it. Continue when ready.';
-      }catch(e){setupStatus.textContent='Could not transcribe that. Type Howdy or Hola instead.';}
-      setupMicBtn.textContent='🎤 Say Howdy or Hola';
+
+      }catch(e){setupStatus.textContent='Could not transcribe that. Type Howdy, Hola, or Hi instead.';}
+
+      setupMicBtn.textContent='🎤 Say Howdy, Hola, or Hi';
+
       setupMicBtn.setAttribute('aria-pressed','false');
+
       setupRecorder=null;
+
     });
+
     setupRecorder.start();
+
     setupMicBtn.textContent='⏹ Stop & transcribe';
+
     setupMicBtn.setAttribute('aria-pressed','true');
+
     setupStatus.textContent='Listening…';
-  }catch(e){setupStatus.textContent='Microphone unavailable. Type Howdy or Hola instead.';}
+
+  }catch(e){setupStatus.textContent='Microphone unavailable. Type Howdy, Hola, or Hi instead.';}
+
 }
+
 setupMicBtn.addEventListener('click',async()=>{
+
   if(setupRecorder&&setupRecorder.state==='recording')setupRecorder.stop();
+
   else await startSetupRecording();
+
 });
-function refreshSetupContinue(){
-  setupContinue.disabled = !setupReply.value.trim();
+
+function validSetupGreeting(value){
+  return /\b(howdy|hola|hi|hello)\b/i.test(String(value || '').trim());
 }
+
+function refreshSetupContinue(){
+  const valid = validSetupGreeting(setupReply.value);
+  setupContinue.disabled = !valid;
+
+  if(setupReply.value.trim() && !valid){
+    setupStatus.textContent = 'For this quick check, type or say only Howdy, Hola, or Hi.';
+  }else if(valid){
+    setupStatus.textContent = 'Got it. Continue when ready.';
+  }else{
+    setupStatus.textContent = 'Typing works too.';
+  }
+}
+
 setupContinue.disabled = true;
+
 setupReply.addEventListener('input', refreshSetupContinue);
 
-setupContinue.addEventListener('click', async ()=>{
-  if(!setupReply.value.trim()){
-    setupStatus.textContent='Give me a quick Howdy or Hola first. 🙂';
+setupContinue.addEventListener('click',()=>{
+
+  const setupText = setupReply.value.trim();
+
+  if(!validSetupGreeting(setupText)){
+
+    setupStatus.textContent='Give me a quick Howdy, Hola, or Hi first. 🙂';
+
+    setupContinue.disabled = true;
+
     return;
+
   }
 
-  // A completed setup check means the student is intentionally starting
-  // a fresh Sim run. Clear any prior browser transcript/state and reset
-  // the server-side session so an old conversation cannot bleed into
-  // the new opening.
-  clearSavedTranscript();
-  try{
-    await fetch('/api/reset', {method:'POST'});
-  }catch(_){
-    // If the reset request fails, local state is still cleared and the
-    // new /api/start call will create a fresh session.
-  }
+  // Keep this transition deliberately simple and synchronous.
 
-  transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+  // No API, audio, expression, or persistence calls happen here.
+
+  setupContinue.disabled = true;
+
+  setupStatus.textContent = '';
+
   setupCard.classList.add('hidden');
+
+  setupCard.style.display = 'none';
+
+  // Prof. Epps' welcome is already visible from the instant the Sim opens.
+
+  postSetupWelcomeShown = true;
+
   introCard.classList.remove('hidden');
-  document.getElementById('name').focus();
+
+  introCard.style.display = 'block';
+
+  replyCard.classList.add('hidden');
+
+
+  const nameBox = document.getElementById('name');
+
+  if(nameBox) nameBox.focus();
+
 });
-setupReply.addEventListener('keydown',(e)=>{
+
+// Keyboard-first setup: Enter/Return is the same as clicking Continue.
+
+// Shift+Enter remains available if a line break is ever needed.
+
+setupReply.addEventListener('keydown', (e)=>{
+
   if(e.key === 'Enter' && !e.shiftKey){
+
+    e.preventDefault();
+
+    setupContinue.click();
+
+  }
+
+});
+
+setupReply.addEventListener('keydown',(e)=>{
+
+  if(e.key === 'Enter' && !e.shiftKey){
+
     e.preventDefault();
 
     if(!setupReply.value.trim()){
-      setupStatus.textContent='Give me a quick Howdy or Hola first. 🙂';
+
+      setupStatus.textContent='Give me a quick Howdy, Hola, or Hi first. 🙂';
+
       return;
+
     }
 
     setupContinue.click();
+
   }
+
 });
 
 // ---------- Student microphone -> editable transcription ----------
+
 let mediaRecorder = null;
+
 let micStream = null;
+
 let micChunks = [];
 
 function supportedRecordingMime(){
+
   const candidates = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'];
+
   if(!window.MediaRecorder) return '';
+
   return candidates.find(t=>MediaRecorder.isTypeSupported(t)) || '';
+
 }
 
 async function startRecording(){
+
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){
+
     micStatus.textContent = 'This browser does not support microphone recording here. You can still type your response.';
+
     return;
+
   }
+
   try{
+
     micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+
     micChunks = [];
+
     const mimeType = supportedRecordingMime();
+
     mediaRecorder = mimeType ? new MediaRecorder(micStream, {mimeType}) : new MediaRecorder(micStream);
 
     mediaRecorder.addEventListener('dataavailable', e=>{
+
       if(e.data && e.data.size) micChunks.push(e.data);
+
     });
 
     mediaRecorder.addEventListener('stop', async ()=>{
+
       const actualType = mediaRecorder.mimeType || mimeType || 'audio/webm';
+
       const blob = new Blob(micChunks, {type:actualType});
+
       if(micStream) micStream.getTracks().forEach(t=>t.stop());
+
       micStream = null;
 
       micBtn.disabled = true;
+
       micBtn.setAttribute('aria-pressed','false');
+
       micBtn.textContent = '🎤 Speak my response';
+
       micStatus.textContent = 'Transcribing your response…';
 
       try{
+
         const form = new FormData();
+
         const extension = actualType.includes('mp4') ? 'mp4' : actualType.includes('ogg') ? 'ogg' : 'webm';
+
         form.append('audio', blob, `student-response.${extension}`);
 
         const r = await fetch('/api/transcribe', {method:'POST', body:form});
+
         const data = await r.json().catch(()=>({}));
+
         if(!r.ok) throw new Error(data.error || 'Transcription failed.');
 
         const existing = replyBox.value.trim();
+
         replyBox.value = existing ? `${existing}\n${data.text}` : data.text;
+
         replyBox.focus();
+
         replyBox.setSelectionRange(replyBox.value.length, replyBox.value.length);
+
         micStatus.textContent = 'Transcription ready. Review or edit it, then press Send.';
+
       }catch(e){
+
         micStatus.textContent = e.message || 'Transcription failed. You can still type your response.';
+
       }finally{
+
         micBtn.disabled = false;
+
         mediaRecorder = null;
+
         micChunks = [];
+
       }
+
     });
 
     mediaRecorder.start();
+
     micBtn.setAttribute('aria-pressed','true');
+
     micBtn.textContent = '⏹ Stop & transcribe';
+
     micStatus.textContent = 'Listening… Speak naturally, then choose Stop & transcribe.';
+
   }catch(e){
+
     micStatus.textContent = 'Microphone access was not available. Check browser permission, or type your response.';
+
     if(micStream){
+
       micStream.getTracks().forEach(t=>t.stop());
+
       micStream = null;
+
     }
+
   }
+
 }
 
 micBtn.addEventListener('click', async ()=>{
+
   if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+
   else await startRecording();
+
 });
+
+
+
 
 
 replyBox.addEventListener('keydown', (e)=>{
+
   if(e.key === 'Enter' && !e.shiftKey){
+
     e.preventDefault();
+
     document.getElementById('send').click();
+
   }
+
 });
 
 
-// Restore only on an actual browser reload.
-// A fresh visit to the Sim must never resurrect a previous student's conversation.
-const navEntry = performance.getEntriesByType('navigation')[0];
-const isBrowserReload = !!navEntry && navEntry.type === 'reload';
 
-if(isBrowserReload && localStorage.getItem(simStateStorageKey) === '1'){
+
+
+// Restore the visible transcript after an accidental refresh.
+
+// The server keeps the OpenAI conversation pointer in the signed session cookie.
+
+if(localStorage.getItem(simStateStorageKey) === '1' && setupCard.classList.contains('hidden')){
+
   const restored = loadSavedTranscript();
+
   if(restored){
-    setupCard.classList.add('hidden');
+
     introCard.classList.add('hidden');
+
     replyCard.classList.remove('hidden');
+
     document.getElementById('replyStatus').textContent =
+
       'Conversation restored after refresh.';
-    if(localStorage.getItem(simCompletionStorageKey) === '1'){
-      showCompletionWorkflow();
-    }
+
   }
-}else{
-  // New visit, not a refresh: begin clean.
-  clearSavedTranscript();
-  transcript.innerHTML = '<h2 class="sr-only">Sim conversation</h2>';
+
 }
 
 // ---------- Per-student transcript export ----------
+
 function transcriptMeta(){
+
   try{return JSON.parse(localStorage.getItem(simMetaStorageKey) || '{}');}catch(_){return {};}
+
 }
 
 function buildTranscriptText(){
@@ -1565,7 +2970,7 @@ function buildTranscriptText(){
   const lines=[];
   lines.push('POLS C1000');
   lines.push('CHAPTER 2 SIM-DISCUSSION');
-  lines.push('Congress and Representation: Who Speaks for Whom?');
+  lines.push('Congress and Representation');
   lines.push('');
   lines.push(`Student: ${meta.name || 'Student'}`);
   if(meta.session_id) lines.push(`Session ID: ${meta.session_id}`);
@@ -1587,102 +2992,79 @@ function buildTranscriptText(){
     }
     lines.push('');
   });
-  lines.push('--------------------------------------------------');
-  lines.push('');
-  lines.push('PRELIMINARY LEARNING ASSESSMENT');
-  const assessment=preliminaryAssessment();
-  if(assessment && assessment.declined){
-    lines.push('Student declined the optional preliminary assessment.');
-  }else if(assessment && assessment.level){
-    lines.push(`Overall: ${assessment.level}`);
-    if(assessment.summary) lines.push(assessment.summary);
-    (assessment.points || []).forEach(point=>lines.push(`- ${point}`));
-    lines.push('');
-    lines.push('This is a preliminary learning assessment, not the course grade. Prof. Epps independently grades the complete Sim-Discussion using the course rubric.');
-  }else{
-    lines.push('No preliminary assessment was generated.');
-  }
-  lines.push('');
+
   lines.push('--------------------------------------------------');
   lines.push('End of copied Sim transcript');
   return lines.join('\n');
 }
 
 
-function renderAssessment(data){
-  assessmentLevel.textContent=data.level || '';
-  assessmentSummary.textContent=data.summary || '';
-  assessmentPoints.innerHTML='';
-  (data.points || []).forEach(point=>{
-    const li=document.createElement('li');
-    li.textContent=point;
-    assessmentPoints.appendChild(li);
+function escapeTranscriptHtml(value){
+  return String(value || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function buildTranscriptHtml(){
+  const meta=transcriptMeta();
+  const studentName=meta.name || 'Student';
+  const when=meta.started_at ? new Date(meta.started_at) : new Date();
+
+  const parts=[
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#111;">',
+    '<div style="font-weight:700;font-size:16px;">POLS C1000</div>',
+    '<div style="font-weight:700;font-size:16px;">CHAPTER 2 SIM-DISCUSSION</div>',
+    '<div style="font-weight:700;margin-bottom:8px;">Congress and Representation</div>',
+    `<div><strong>Student:</strong> ${escapeTranscriptHtml(studentName)}</div>`,
+    meta.session_id ? `<div><strong>Session ID:</strong> ${escapeTranscriptHtml(meta.session_id)}</div>` : '',
+    `<div style="margin-bottom:12px;"><strong>Session started:</strong> ${escapeTranscriptHtml(when.toLocaleString())}</div>`,
+    '<hr>'
+  ];
+
+  transcript.querySelectorAll('.turn').forEach(turn=>{
+    if(turn.classList.contains('student-turn')){
+      const responseText=(turn.textContent || '').trim();
+      parts.push(
+        '<div style="margin:12px 0;padding:10px 12px;background:#fff4cc;border-left:5px solid #8b1e2d;">',
+        `<div style="font-weight:800;color:#8b1e2d;">${escapeTranscriptHtml(studentName.toUpperCase())} — STUDENT RESPONSE:</div>`,
+        `<div style="color:#0b4f6c;font-weight:700;">${escapeTranscriptHtml(responseText).replace(/\n/g,'<br>')}</div>`,
+        '</div>'
+      );
+    }else{
+      const speaker=(turn.querySelector('.speaker')?.textContent || 'SIM').trim();
+      const responseText=(turn.querySelector('.text')?.textContent || '').trim();
+      parts.push(
+        '<div style="margin:10px 0;">',
+        `<div style="font-weight:700;color:#222;">${escapeTranscriptHtml(speaker.toUpperCase())}:</div>`,
+        `<div style="color:#222;">${escapeTranscriptHtml(responseText).replace(/\n/g,'<br>')}</div>`,
+        '</div>'
+      );
+    }
   });
+
+  parts.push('<hr><div>End of copied Sim transcript</div></div>');
+  return parts.join('');
 }
-
-assessmentYes.addEventListener('click', async ()=>{
-  assessmentYes.disabled=true;
-  assessmentNo.disabled=true;
-  assessmentStatus.textContent='Preparing your preliminary assessment...';
-  try{
-    const response=await fetch('/api/assessment',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({transcript:buildTranscriptText()})
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(data.error || 'The preliminary assessment could not be generated.');
-    savePreliminaryAssessment(data);
-    renderAssessment(data);
-    assessmentChoiceCard.classList.add('hidden');
-    assessmentResultCard.classList.remove('hidden');
-    assessmentStatus.textContent='';
-    requestAnimationFrame(()=>assessmentResultCard.scrollIntoView({behavior:'smooth', block:'nearest'}));
-  }catch(e){
-    assessmentStatus.textContent=(e.message || 'Assessment unavailable.') + ' You can continue to submission without it.';
-  }finally{
-    assessmentYes.disabled=false;
-    assessmentNo.disabled=false;
-  }
-});
-
-assessmentNo.addEventListener('click', ()=>{
-  savePreliminaryAssessment({declined:true});
-  showSubmissionCard();
-});
-
-assessmentContinue.addEventListener('click', ()=>showSubmissionCard());
-
-const instructorToken=(new URLSearchParams(window.location.search).get('instructor') || '').trim();
-if(instructorToken){
-  fetch(`/api/instructor/status?token=${encodeURIComponent(instructorToken)}`)
-    .then(r=>r.json())
-    .then(data=>{
-      if(data.authorized) instructorSkip.classList.remove('hidden');
-    })
-    .catch(()=>{});
-}
-
-instructorSkip.addEventListener('click', async ()=>{
-  instructorSkip.disabled=true;
-  instructorSkip.textContent='🧪 Skipping...';
-  try{
-    const data=await postJSON('/api/instructor/skip',{token:instructorToken});
-    await playTurnsSequentially(data.turns||[], false);
-    handleSimCompletion(data);
-  }catch(e){
-    document.getElementById('replyStatus').textContent=e.message || 'Instructor skip failed.';
-  }finally{
-    instructorSkip.disabled=false;
-    instructorSkip.textContent='🧪 Skip to completion';
-  }
-});
 
 copyTranscript.addEventListener('click', async ()=>{
   const text=buildTranscriptText();
+  const html=buildTranscriptHtml();
+
   try{
-    await navigator.clipboard.writeText(text);
-    copyTranscriptStatus.textContent='Full transcript copied. Return to Canvas, paste it into Text Entry, review it, and submit.';
+    if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+      const item = new ClipboardItem({
+        'text/plain': new Blob([text], {type:'text/plain'}),
+        'text/html': new Blob([html], {type:'text/html'})
+      });
+      await navigator.clipboard.write([item]);
+      copyTranscriptStatus.textContent='Full transcript copied with student responses highlighted. Return to Canvas, paste into Text Entry, review it, and submit.';
+    }else{
+      await navigator.clipboard.writeText(text);
+      copyTranscriptStatus.textContent='Full transcript copied. Your browser used plain text, so student responses are labeled clearly but may not keep the color highlight.';
+    }
     finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
   }catch(_){
     const temp=document.createElement('textarea');
@@ -1694,176 +3076,294 @@ copyTranscript.addEventListener('click', async ()=>{
     temp.select();
     const ok=document.execCommand('copy');
     temp.remove();
-    copyTranscriptStatus.textContent=ok ? 'Full transcript copied. Return to Canvas and paste it into Text Entry.' : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
+    copyTranscriptStatus.textContent=ok
+      ? 'Full transcript copied in plain text. Student responses remain clearly labeled.'
+      : 'Copy was blocked by the browser. Select the conversation manually and copy it.';
     finalCopyTranscriptStatus.textContent=copyTranscriptStatus.textContent;
   }
 });
 
 transcriptBtn.addEventListener('click', ()=>{
+
   const opening = transcriptPanel.classList.contains('hidden');
+
   transcriptPanel.classList.toggle('hidden');
+
   transcriptBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+
   if(opening) helpPanel.classList.add('hidden');
+
 });
 
 finalCopyTranscript.addEventListener('click', ()=>copyTranscript.click());
 
 // ---------- Neutral operating help ----------
+
 helpBtn.addEventListener('click', ()=>{
+
   const opening = helpPanel.classList.contains('hidden');
+
   helpPanel.classList.toggle('hidden');
+
   helpBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+
   if(opening){ transcriptPanel.classList.add('hidden'); helpPanel.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+
 });
 
 // ---------- Accessibility and audio ----------
+
 const audioToggle = document.getElementById('audioToggle');
+
+const rewindAudio = document.getElementById('rewindAudio');
+
+const playPauseAudio = document.getElementById('playPauseAudio');
+
+const fastForwardAudio = document.getElementById('fastForwardAudio');
+
 const replayLast = document.getElementById('replayLast');
-const pauseAudio = document.getElementById('pauseAudio');
+
 const focusConversation = document.getElementById('focusConversation');
+
 const audioStatus = document.getElementById('audioStatus');
 
 const characterVoices = {
+
   'Prof. Epps':'onyx',
+
   'Sophia':'marin',
+
   'Ethan':'ash',
+
   'Carlos':'cedar',
+
   'Aaliyah':'coral',
-  'Freja':'marin',
-  'James Madison':'fable',
-  'Henry Clay':'echo',
-  'Lyndon B. Johnson':'onyx',
-  'Shirley Chisholm':'sage',
-  'John McCain':'ash'
+
+  'Freja':'marin'
+
 };
 
 
+
+
+
 let autoRead = false;
+
 let lastAudioTurn = null;
+
 let currentAudio = null;
+
 let focusMode = false;
-let audioQueue = [];
+
+
 let audioPlaying = false;
+
 const speechCache = new Map();
+
 const FIRST_AUDIO_BRIDGE = "All right, let's get everybody settled in.";
-console.info('Chapter 2 expression system loaded for core cast and historical guests.');
+
+console.info('Chapter 5 Sim loaded: synced narration + transcript/audio controls + civil-rights guest routing.');
 
 function textForSpeech(text){
+
   return (text || '')
+
     .replace(/[\p{Extended_Pictographic}\uFE0F]/gu, '')
+
     .replace(/\s{2,}/g, ' ')
+
     .trim();
+
 }
 
 function speechCacheKey(speaker, text, preview=false, voiceOverride=''){
+
   const voice = characterVoices[speaker] || '';
+
   return `${speaker}|${voice}|${preview ? 'preview' : 'turn'}|${textForSpeech(text)}`;
+
 }
 
 async function fetchSpeech(speaker, text, preview=false, voiceOverride=''){
+
   const spokenText = preview ? text : textForSpeech(text);
+
   const key = speechCacheKey(speaker, spokenText, preview, voiceOverride);
 
   if(!preview && speechCache.has(key)){
+
     return await speechCache.get(key);
+
   }
 
   const requestPromise = (async ()=>{
+
     const r = await fetch('/api/speech', {
+
       method:'POST',
+
       headers:{'Content-Type':'application/json'},
+
       body:JSON.stringify({
+
         speaker,
+
         text: spokenText,
+
         preview,
+
         voice: characterVoices[speaker] || ''
+
       })
+
     });
+
     if(!r.ok){
+
       let message = 'Speech generation failed.';
+
       try{
+
         const data = await r.json();
+
         message = data.error || message;
+
       }catch(_){}
+
       throw new Error(message);
+
     }
+
     return await r.blob();
+
   })();
 
   if(!preview){
+
     speechCache.set(key, requestPromise);
+
   }
 
   try{
+
     return await requestPromise;
+
   }catch(e){
+
     if(!preview) speechCache.delete(key);
+
     throw e;
+
   }
+
 }
 
 function prefetchTurnAudio(turns){
+
   if(!autoRead || !Array.isArray(turns)) return;
+
   // Fire all TTS requests immediately; playback remains in dialogue order.
+
   turns.forEach(t=>{
+
     if(t && t.speaker && t.text){
+
       fetchSpeech(t.speaker, t.text).catch(()=>{});
+
     }
+
   });
+
 }
 
-async function playTurnAudio(speaker, text, preview=false, voiceOverride=''){
-  if(!text && !preview) return;
+async function playTurnAudioAndWait(speaker, text){
+  if(!text) return;
+
+  await waitUntilNarrationResumed();
   audioPlaying = true;
   audioStatus.textContent = `Loading ${speaker}'s voice.`;
 
   try{
-    const blob = await fetchSpeech(speaker, text, preview, voiceOverride);
+    const blob = await fetchSpeech(speaker, text);
     const url = URL.createObjectURL(blob);
 
-    if(currentAudio){
-      currentAudio.pause();
-      currentAudio = null;
-    }
+    stopCurrentTurnAudio(false);
 
-    currentAudio = new Audio(url);
-    lastAudioTurn = {speaker, text};
+    return await new Promise(resolve=>{
+      activeAdvanceResolve = resolve;
+      const audio = new Audio(url);
+      audio._objectUrl = url;
+      currentAudio = audio;
+      lastAudioTurn = {speaker, text};
 
-    currentAudio.onplay = () => {
-      audioStatus.textContent = `Playing ${speaker}'s dialogue.`;
-    };
-    currentAudio.onended = () => {
-      URL.revokeObjectURL(url);
-      currentAudio = null;
-      audioPlaying = false;
-      audioStatus.textContent = 'Audio finished.';
-      playNextQueuedAudio();
-    };
-    currentAudio.onerror = () => {
-      URL.revokeObjectURL(url);
-      currentAudio = null;
-      audioPlaying = false;
-      audioStatus.textContent = 'Audio playback failed.';
-      playNextQueuedAudio();
-    };
+      const finish = (message)=>{
+        if(currentAudio === audio) currentAudio = null;
+        try{ URL.revokeObjectURL(url); }catch(_){}
+        audioPlaying = false;
+        audioStatus.textContent = message;
+        if(activeAdvanceResolve === resolve) activeAdvanceResolve = null;
+        updatePlayPauseButton();
+        resolve();
+      };
 
-    await currentAudio.play();
+      audio.onplay = ()=>{
+        narrationPaused = false;
+        audioStatus.textContent = `Playing ${speaker}'s dialogue.`;
+        updatePlayPauseButton();
+      };
+
+      audio.onpause = ()=>{
+        if(!audio.ended && currentAudio === audio){
+          audioStatus.textContent = 'Narration paused.';
+          updatePlayPauseButton();
+        }
+      };
+
+      audio.onended = ()=>finish('Audio finished.');
+      audio.onerror = ()=>finish('Audio playback failed. Continuing with text.');
+
+      audio.play().catch(()=>{
+        // Browser autoplay rules can block playback until the student clicks a control.
+        narrationPaused = true;
+        audioStatus.textContent = 'Audio is ready. Select Play to continue.';
+        updatePlayPauseButton();
+      });
+    });
+
   }catch(e){
     audioPlaying = false;
-    audioStatus.textContent = e.message;
-    playNextQueuedAudio();
+    audioStatus.textContent = e.message || 'Speech generation failed. Continuing with text.';
+    updatePlayPauseButton();
+    await waitForReadableDelay(text, false);
   }
 }
 
-function queueTurnAudio(speaker, text){
-  audioQueue.push({speaker, text});
-  if(!audioPlaying) playNextQueuedAudio();
-}
-
-function playNextQueuedAudio(){
-  if(audioPlaying || !audioQueue.length) return;
-  const next = audioQueue.shift();
-  playTurnAudio(next.speaker, next.text);
+async function playTurnAudioStandalone(speaker, text){
+  if(!text) return;
+  try{
+    const blob = await fetchSpeech(speaker, text);
+    const url = URL.createObjectURL(blob);
+    stopCurrentTurnAudio(false);
+    const audio = new Audio(url);
+    audio._objectUrl = url;
+    currentAudio = audio;
+    lastAudioTurn = {speaker, text};
+    audioPlaying = true;
+    audio.onended = ()=>{
+      if(currentAudio === audio) currentAudio = null;
+      try{ URL.revokeObjectURL(url); }catch(_){}
+      audioPlaying = false;
+      audioStatus.textContent = 'Audio finished.';
+      updatePlayPauseButton();
+    };
+    audio.onerror = audio.onended;
+    await audio.play();
+    narrationPaused = false;
+    audioStatus.textContent = `Playing ${speaker}'s dialogue.`;
+    updatePlayPauseButton();
+  }catch(e){
+    audioStatus.textContent = e.message || 'Audio playback failed.';
+  }
 }
 
 audioToggle.addEventListener('click', ()=>{
@@ -1872,82 +3372,163 @@ audioToggle.addEventListener('click', ()=>{
   audioToggle.textContent = autoRead ? '🔊 Character audio: On' : '🔊 Character audio: Off';
   audioToggle.setAttribute('aria-label', autoRead ? 'Turn character audio off' : 'Turn character audio on');
   audioStatus.textContent = autoRead ? 'Character audio is on.' : 'Character audio is off.';
+
   if(autoRead){
     fetchSpeech('Prof. Epps', FIRST_AUDIO_BRIDGE).catch(()=>{});
-  }
-  if(!autoRead){
-    audioQueue = [];
-    if(currentAudio){
-      currentAudio.pause();
-      currentAudio = null;
-    }
-    audioPlaying = false;
+  }else if(currentAudio){
+    stopCurrentTurnAudio(true);
   }
 });
 
-replayLast.addEventListener('click', ()=>{
-  if(lastAudioTurn){
-    audioQueue = [];
-    if(currentAudio){
+rewindAudio.addEventListener('click', ()=>{
+  if(currentAudio && Number.isFinite(currentAudio.duration)){
+    currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 10);
+    audioStatus.textContent = 'Rewound 10 seconds.';
+  }else{
+    audioStatus.textContent = 'No active speaker audio to rewind.';
+  }
+});
+
+fastForwardAudio.addEventListener('click', ()=>{
+  if(currentAudio && Number.isFinite(currentAudio.duration)){
+    currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 10);
+    audioStatus.textContent = 'Moved forward 10 seconds.';
+  }else{
+    audioStatus.textContent = 'No active speaker audio to fast forward.';
+  }
+});
+
+playPauseAudio.addEventListener('click', async ()=>{
+  if(currentAudio){
+    if(currentAudio.paused){
+      narrationPaused = false;
+      try{ await currentAudio.play(); }catch(e){ audioStatus.textContent = e.message || 'Audio could not resume.'; }
+    }else{
+      narrationPaused = true;
       currentAudio.pause();
-      currentAudio = null;
     }
-    audioPlaying = false;
-    playTurnAudio(lastAudioTurn.speaker, lastAudioTurn.text);
-  } else {
+  }else{
+    narrationPaused = !narrationPaused;
+    audioStatus.textContent = narrationPaused ? 'Narration paused.' : 'Narration resumed.';
+  }
+  updatePlayPauseButton();
+});
+
+replayLast.addEventListener('click', ()=>{
+  if(currentAudio){
+    currentAudio.currentTime = 0;
+    narrationPaused = false;
+    currentAudio.play().catch(()=>{});
+    audioStatus.textContent = 'Replaying current speaker.';
+    updatePlayPauseButton();
+  }else if(lastAudioTurn){
+    playTurnAudioStandalone(lastAudioTurn.speaker, lastAudioTurn.text);
+  }else{
     audioStatus.textContent = 'There is no previous dialogue to replay yet.';
   }
 });
 
-pauseAudio.addEventListener('click', ()=>{
-  audioQueue = [];
-  if(currentAudio){
-    currentAudio.pause();
-    currentAudio = null;
-  }
-  audioPlaying = false;
-  audioStatus.textContent = 'Audio stopped.';
-});
-
 focusConversation.addEventListener('click', ()=>{
+
   focusMode = !focusMode;
+
   focusConversation.setAttribute('aria-pressed', focusMode ? 'true' : 'false');
+
   focusConversation.textContent = focusMode ? 'Restore room view' : 'Focus conversation';
+
   roomPct = focusMode ? 45 : 58;
+
   applyRoomWidth();
+
   updateDividerAria();
+
 });
 
 function updateDividerAria(){
+
   divider.setAttribute('aria-valuenow', Math.round(roomPct));
+
   divider.setAttribute('aria-valuetext', `Room uses ${Math.round(roomPct)} percent of the window`);
+
 }
 
 divider.addEventListener('keydown', (e)=>{
+
   if(window.innerWidth <= 900) return;
+
   if(e.key === 'ArrowLeft'){
+
     e.preventDefault();
+
     roomPct = Math.max(42, roomPct - 2);
+
     applyRoomWidth();
+
     updateDividerAria();
+
   } else if(e.key === 'ArrowRight'){
+
     e.preventDefault();
+
     roomPct = Math.min(80, roomPct + 2);
+
     applyRoomWidth();
+
     updateDividerAria();
+
   } else if(e.key === 'Home'){
+
     e.preventDefault();
+
     roomPct = 42;
+
     applyRoomWidth();
+
     updateDividerAria();
+
   } else if(e.key === 'End'){
+
     e.preventDefault();
+
     roomPct = 80;
+
     applyRoomWidth();
+
     updateDividerAria();
+
   }
+
 });
 
+
+
+
+
+['name','origin','fact'].forEach((id)=>{
+
+  const el = document.getElementById(id);
+
+  if(!el) return;
+
+  el.addEventListener('keydown', (e)=>{
+
+    if(e.key === 'Enter' && !e.shiftKey){
+
+      e.preventDefault();
+
+      const btn = document.getElementById('introSubmit');
+
+      if(btn) btn.click();
+
+    }
+
+  });
+
+});
+
+
 </script>
+
 </body>
+
 </html>
