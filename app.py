@@ -255,6 +255,38 @@ def guest_context_for(question):
 
 
 
+
+SPEAKER_ALIASES = {
+    "prof. ric epps": "Prof. Epps",
+    "prof ric epps": "Prof. Epps",
+    "professor ric epps": "Prof. Epps",
+    "professor epps": "Prof. Epps",
+    "prof. epps": "Prof. Epps",
+    "ric epps": "Prof. Epps",
+
+    "sophia martinez": "Sophia",
+    "sophia": "Sophia",
+
+    "ethan williams": "Ethan",
+    "ethan": "Ethan",
+
+    "carlos rodriguez": "Carlos",
+    "carlos": "Carlos",
+
+    "aaliyah brooks": "Aaliyah",
+    "aaliyah": "Aaliyah",
+
+    "freja lindström": "Freja",
+    "freja lindstrom": "Freja",
+    "freja": "Freja",
+}
+
+def canonical_speaker_name(name):
+    raw = str(name or "").strip()
+    key = raw.lower().rstrip(":")
+    return SPEAKER_ALIASES.get(key, raw)
+
+
 def parse_sim_payload(response):
 
     raw = (response.output_text or "").strip()
@@ -283,7 +315,7 @@ def parse_sim_payload(response):
 
                 continue
 
-            speaker = str(turn.get("speaker", "Prof. Epps")).strip()
+            speaker = canonical_speaker_name(turn.get("speaker", "Prof. Epps"))
 
             text = str(turn.get("text", "")).strip()
 
