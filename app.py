@@ -8,6 +8,7 @@ import json
 
 import random
 import re
+import secrets
 
 from io import BytesIO
 
@@ -38,6 +39,7 @@ IS_PRODUCTION = os.environ.get("SIM_PRODUCTION", "0") == "1"
 SIM_SECRET_KEY = os.environ.get("SIM_SECRET_KEY", "dev-only-change-me")
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+SIM_INSTRUCTOR_TOKEN = os.environ.get("SIM_INSTRUCTOR_TOKEN", "").strip()
 
 
 
@@ -848,6 +850,44 @@ The final completion may close without another question.
 
 
 
+
+
+
+def instructor_token_valid(candidate):
+    if not SIM_INSTRUCTOR_TOKEN or not candidate:
+        return False
+    try:
+        return secrets.compare_digest(str(candidate), SIM_INSTRUCTOR_TOKEN)
+    except Exception:
+        return False
+
+
+@app.post("/api/instructor/skip")
+def api_instructor_skip():
+    data = request.get_json(force=True, silent=True) or {}
+    token = str(data.get("token") or "").strip()
+
+    if not instructor_token_valid(token):
+        return jsonify({"error": "Instructor PIN not recognized."}), 403
+
+    name = session.get("student_name", "Instructor")
+    session["question_index"] = 4
+    session["question_started"] = True
+    session["sim_complete"] = True
+
+    return jsonify({
+        "turns": [{
+            "speaker": "Prof. Epps",
+            "text": f"Instructor test mode: jumping to the Chapter 2 completion workflow for {name}.",
+            "action": "",
+            "expression": "amused",
+        }],
+        "wait_for_student": False,
+        "question_result": "answered",
+        "complete": True,
+        "sim_complete": True,
+        "progress": 4,
+    })
 
 
 @app.post("/api/transcribe")

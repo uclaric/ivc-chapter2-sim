@@ -1265,6 +1265,7 @@ input:focus, textarea:focus,
       <button type="button" id="transcriptBtn" aria-expanded="false" aria-controls="transcriptPanel">📋 Transcript</button>
 
       <button type="button" id="helpBtn" aria-expanded="false" aria-controls="helpPanel">❓ Help</button>
+      <button type="button" id="instructorTest" aria-label="Open instructor test mode">🧪 Instructor Test</button>
 
       <button type="button" id="restartSim" aria-label="Restart the Sim from the beginning">↻ Restart Sim</button>
 
@@ -1498,6 +1499,7 @@ introCard.classList.add('hidden');
 const helpBtn = document.getElementById('helpBtn');
 
 const helpPanel = document.getElementById('helpPanel');
+const instructorTest = document.getElementById('instructorTest');
 
 const restartSim = document.getElementById('restartSim');
 
@@ -2387,6 +2389,51 @@ async function postJSON(url, body){
 
   return data;
 
+}
+
+
+if(instructorTest){
+  instructorTest.addEventListener('click', async ()=>{
+    const token = window.prompt('Enter instructor PIN:');
+    if(!token) return;
+
+    instructorTest.disabled = true;
+    const oldText = instructorTest.textContent;
+    instructorTest.textContent = '🧪 Checking...';
+
+    try{
+      const data = await postJSON('/api/instructor/skip', {token});
+
+      if(data.panel && typeof setRoomPanel === 'function'){
+        setRoomPanel(data.panel);
+      }
+
+      if(typeof prefetchTurnAudio === 'function'){
+        prefetchTurnAudio(data.turns || []);
+      }
+
+      if(typeof revealTurnsSequentially === 'function'){
+        await revealTurnsSequentially(data.turns || [], false);
+      }else{
+        (data.turns || []).forEach(t=>{
+          addTurn(t.speaker || 'Prof. Epps', t.text || '', t.action || '', true, expressionForTurn(t), true);
+        });
+      }
+
+      if(typeof handleSimCompletion === 'function'){
+        handleSimCompletion(data);
+      }else if(typeof maybeShowFinalTranscript === 'function'){
+        maybeShowFinalTranscript(data);
+      }else if(typeof showFinalTranscriptCard === 'function'){
+        showFinalTranscriptCard();
+      }
+    }catch(e){
+      window.alert(e.message || 'Instructor PIN not recognized.');
+    }finally{
+      instructorTest.disabled = false;
+      instructorTest.textContent = oldText;
+    }
+  });
 }
 
 document.getElementById('name').addEventListener('keydown',(e)=>{
