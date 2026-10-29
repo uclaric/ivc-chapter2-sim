@@ -386,17 +386,14 @@ html,body{
 }
 
 .student-turn{
-
-  background:rgba(166,25,46,.14);
-
-  border-left:4px solid var(--red);
-
-  padding:10px 12px;
-
+  background:#fff0ad !important;
+  color:#211b11 !important;
+  border-left:5px solid #d4a72c !important;
+  padding:12px 14px;
   border-radius:8px;
-
-  font-weight:700
-
+  font-weight:800 !important;
+  line-height:1.55;
+  white-space:pre-wrap;
 }
 
 .composer{
@@ -866,17 +863,14 @@ input:focus, textarea:focus,
 .turn[data-speaker="Professor Epps"] .speaker{color:var(--gold)}
 
 .student-turn{
-
-  background:rgba(166,25,46,.14);
-
-  border-left:4px solid var(--red);
-
-  padding:10px 12px;
-
+  background:#fff0ad !important;
+  color:#211b11 !important;
+  border-left:5px solid #d4a72c !important;
+  padding:12px 14px;
   border-radius:8px;
-
-  font-weight:700
-
+  font-weight:800 !important;
+  line-height:1.55;
+  white-space:pre-wrap;
 }
 
 .room-side-toolbar{
@@ -2300,7 +2294,15 @@ function addStudent(text, persist=true, shouldScroll=true){
 
   wrap.className='turn student-turn';
 
-  wrap.textContent=text;
+  const heading=document.createElement('div');
+  heading.className='student-response-heading';
+  heading.textContent='★ YOUR RESPONSE';
+  heading.style.cssText='font-size:.78rem;font-weight:800;letter-spacing:.035em;color:#654a08;margin-bottom:5px;';
+  const response=document.createElement('div');
+  response.className='student-response-text';
+  response.textContent=text;
+  wrap.appendChild(heading);
+  wrap.appendChild(response);
 
   transcript.appendChild(wrap);
 
@@ -3033,8 +3035,8 @@ function buildTranscriptText(){
 
   transcript.querySelectorAll('.turn').forEach(turn=>{
     if(turn.classList.contains('student-turn')){
-      lines.push(`${(meta.name || 'STUDENT').toUpperCase()} — STUDENT RESPONSE:`);
-      lines.push((turn.textContent || '').trim());
+      lines.push(`★★★★★ ${(meta.name || 'STUDENT').toUpperCase()} — STUDENT RESPONSE ★★★★★`);
+      lines.push((turn.querySelector('.student-response-text')?.textContent || turn.textContent || '').trim());
     }else{
       const speaker=(turn.querySelector('.speaker')?.textContent || 'SIM').trim();
       const text=(turn.querySelector('.text')?.textContent || '').trim();
@@ -3077,11 +3079,11 @@ function buildTranscriptHtml(){
 
   transcript.querySelectorAll('.turn').forEach(turn=>{
     if(turn.classList.contains('student-turn')){
-      const responseText=(turn.textContent || '').trim();
+      const responseText=(turn.querySelector('.student-response-text')?.textContent || turn.textContent || '').trim();
       parts.push(
-        '<div style="margin:12px 0;padding:10px 12px;background:#fff4cc;border-left:5px solid #8b1e2d;">',
-        `<div style="font-weight:800;color:#8b1e2d;">${escapeTranscriptHtml(studentName.toUpperCase())} — STUDENT RESPONSE:</div>`,
-        `<div style="color:#0b4f6c;font-weight:700;">${escapeTranscriptHtml(responseText).replace(/\n/g,'<br>')}</div>`,
+        '<div style="margin:12px 0;padding:10px 12px;background:#fff0ad;border-left:5px solid #d4a72c;">',
+        `<div style="font-weight:800;color:#654a08;">★★★★★ ${escapeTranscriptHtml(studentName.toUpperCase())} — STUDENT RESPONSE ★★★★★</div>`,
+        `<div style="color:#0b4f6c;font-weight:800;">${escapeTranscriptHtml(responseText).replace(/\n/g,'<br>')}</div>`,
         '</div>'
       );
     }else{
