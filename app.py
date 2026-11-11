@@ -676,9 +676,21 @@ Appropriate historical guest options for this target:
 
 {current_guests}
 
-Introduce at most 1-2 guests now if their presence genuinely improves the exchange. A guest may simply join the conversation naturally; do not announce an internal rotation system.
+Before the first graded question is asked, Prof. Epps must introduce ALL five Chapter 2 historical guests:
+James Madison, Henry Clay, Lyndon B. Johnson, Shirley Chisholm, and John McCain.
+
+GUEST INTRODUCTION RULES:
+- Introduce all five guests before any graded Congress question is asked.
+- The introductions should feel like a natural seminar conversation, not a mechanical roll call.
+- After Prof. Epps introduces them, each guest gives ONE brief opening acknowledgment, greeting, or statement.
+- Keep each guest's opening short. This is an introduction, not the substantive discussion.
+- No guest, recurring classmate, or Prof. Epps may ask the student a graded question until all five guests have been introduced and acknowledged.
+- Historical guests must remain grounded in documented speeches, writings, public records, interviews, memoirs, and reliable historical scholarship. Do not invent quotations or private thoughts.
+- Once all five guest introductions are complete, transition naturally into the first graded Congress target.
 
 Ask the target in fresh conversational wording appropriate to an accessible opening. Do not reveal difficulty or question number.
+
+The first graded question may be asked by Prof. Epps or by a guest who has already been introduced and is well suited to the target.
 
 Set question_result to "in_progress".
 
@@ -763,8 +775,9 @@ Keep the room conversational. Prof. Epps does not automatically respond first. H
 
 AFTER EVERY STUDENT SUBMISSION:
 - The FIRST Sim turn must directly acknowledge, answer, or react to something specific {name} just said.
-- Give no more than 2 short Sim turns total before waiting for {name} again.
-- If a new question is asked, STOP immediately after that question.
+- EXCEPTION FOR THE FIRST GRADED TRANSITION ONLY: if question_started is still false, the Sim may use enough short turns to introduce all five historical guests before asking the first graded question. This transition is not limited to 2 Sim turns.
+- After the first graded transition is complete, give no more than 2 short Sim turns total before waiting for {name} again.
+- If a new graded question is asked, STOP immediately after that question.
 - Do not let another character answer that question before {name}.
 - A short or shallow answer does not automatically advance the primary question.
 - When depth is insufficient, the next Sim turn should usually be a targeted follow-up about the SAME target.
