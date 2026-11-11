@@ -1618,46 +1618,65 @@ async function waitUntilNarrationResumed(){
 }
 
 const ROOM_PANELS = {
-  team: '/static/chapter2_room.png',
-  congress: '/static/chapter2_room.png'
+  team: '/static/chapter2_room.png'
 };
+
+const HISTORICAL_GUESTS = new Set([
+  'James Madison',
+  'Henry Clay',
+  'Lyndon B. Johnson',
+  'Shirley Chisholm',
+  'John McCain'
+]);
 
 let currentRoomPanel = 'team';
 
 function setRoomPanel(panel){
 
-  const next = ROOM_PANELS[panel] ? panel : 'team';
-
-  currentRoomPanel = next;
+  currentRoomPanel = 'team';
 
   roomImage.onerror = () => {
-
     roomImage.onerror = null;
-
     roomImage.src = ROOM_PANELS.team;
-
-    roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room, welcoming the arriving student.';
-
+    roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered around a low table in the Chapter 2 discussion room.';
   };
 
-  roomImage.src = ROOM_PANELS[next];
-
-  if(next === 'team' || next === 'congress'){
-    roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered in the Chapter 2 Congress and Representation discussion room.';
-  }else if(next === 'presidents'){
-
-    roomImage.alt = 'Chapter 2 Congress and Representation discussion room.';
-
-  }else{
-
-    roomImage.alt = 'Chapter 2 Congress and Representation discussion room.';
-
-  }
+  roomImage.src = ROOM_PANELS.team;
+  roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered in the Chapter 2 Congress and Representation discussion room.';
 
   zoom = 1;
-
   setZoom(1);
+}
 
+function setRoomImageForSpeaker(speaker, expression='neutral'){
+
+  if(!HISTORICAL_GUESTS.has(speaker)){
+    if(currentRoomPanel !== 'team'){
+      setRoomPanel('team');
+    }
+    return;
+  }
+
+  const guestImages = characterExpressions[speaker] || {};
+  const expr = normalizeExpression(expression) || 'neutral';
+  const nextImage = guestImages[expr] || guestImages.neutral;
+
+  if(!nextImage) return;
+
+  currentRoomPanel = `guest:${speaker}`;
+
+  roomImage.onerror = () => {
+    roomImage.onerror = null;
+    roomImage.src = ROOM_PANELS.team;
+    roomImage.alt = 'Prof. Epps, Sophia, Ethan, Carlos, Aaliyah, and Freja gathered in the Chapter 2 Congress and Representation discussion room.';
+    currentRoomPanel = 'team';
+  };
+
+  roomImage.src = nextImage;
+  roomImage.alt = `${speaker}, historical guest in the Chapter 2 Congress and Representation Sim-Discussion.`;
+
+  zoom = 1;
+  setZoom(1);
 }
 
 const characterExpressions = {
@@ -1983,6 +2002,11 @@ function addTurn(speaker, text, action='', persist=true, expression='', shouldSc
   row.style.gap='12px';
 
   const resolvedExpression = normalizeExpression(expression) || inferExpression(text);
+
+  // Keep the large room visual synchronized with the active speaker.
+  // Historical guests take over the large visual while they speak.
+  // Recurring cast returns the view to the normal Chapter 2 group room.
+  setRoomImageForSpeaker(speaker, resolvedExpression);
 
   const imagePath = characterExpressions[speaker]?.[resolvedExpression] ||
 
@@ -2556,7 +2580,7 @@ document.getElementById('join').addEventListener('click', async ()=>{
 
     const data=await postJSON('/api/start',{name,origin,fact});
 
-    setRoomPanel(data.panel || 'team');
+    setRoomPanel('team');
 
     localStorage.setItem(simMetaStorageKey, JSON.stringify({
 
@@ -2635,7 +2659,7 @@ document.getElementById('send').addEventListener('click', async ()=>{
     }
 
     const data=await postJSON('/api/reply',{text});
-    setRoomPanel(data.panel || currentRoomPanel);
+    // Room image now follows the active speaker automatically.
     prefetchTurnAudio(data.turns||[]);
     await revealTurnsSequentially(data.turns||[], false);
     maybeShowFinalTranscript(data);
